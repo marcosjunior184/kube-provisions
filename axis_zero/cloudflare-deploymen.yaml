@@ -1,0 +1,63 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cloudflared-config
+data:
+  config.yaml: |
+    tunnel: YOUR_TUNNEL_ID  # Replace with your tunnel ID
+    credentials-file: /etc/cloudflared/credentials.json
+    ingress:
+      - hostname: your-app.your-domain.com  # Replace with your domain
+        service: http://react-app-service:80
+      - service: http_status:404
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: cloudflared-credentials
+type: Opaque
+data:
+  credentials.json: YOUR_BASE64_ENCODED_CREDENTIALS  # Replace with your credentials
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cloudflared-tunnel
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cloudflared-tunnel
+  template:
+    metadata:
+      labels:
+        app: cloudflared-tunnel
+    spec:
+      containers:
+      - name: cloudflared
+        image: cloudflare/cloudflared:latest
+        args:
+        - tunnel
+        - --config
+        - /etc/cloudflared/config.yaml
+        - run
+        volumeMounts:
+        - name: cloudflared-config
+          mountPath: /etc/cloudflared
+        - name: cloudflared-credentials
+          mountPath: /etc/cloudflared
+          readOnly: true
+        resources:
+          requests:
+            memory: "32Mi"
+            cpu: "10m"
+          limits:
+            memory: "64Mi"
+            cpu: "50m"
+      volumes:
+      - name: cloudflared-config
+        configMap:
+          name: cloudflared-config
+      - name: cloudflared-credentials
+        secret:
+          secretName: cloudflared-credentials
