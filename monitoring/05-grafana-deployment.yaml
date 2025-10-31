@@ -16,7 +16,8 @@ spec:
         app: grafana
     spec:
       securityContext:
-        runAsUser: 472                       # Ensures Grafana runs with appropriate user permissions to access mounted volumes.
+        runAsUser: 472
+        runAsGroup: 472
         fsGroup: 472
       containers:
       - name: grafana
@@ -56,7 +57,7 @@ spec:
           periodSeconds: 10
       volumes:
       - name: grafana-storage
-        PersistentVolumeClaim:
+        persistentVolumeClaim:
           claimName: grafana-pvc
       - name: grafana-datasources
         configMap:
