@@ -8,7 +8,7 @@ data:
     credentials-file: /etc/cloudflared/credentials.json
     ingress:
       - hostname: your-app.your-domain.com  # Replace with your domain
-        service: http://react-app-service:80
+        service: http://axis-zero-app:80
       - service: http_status:404
 ---
 apiVersion: v1
