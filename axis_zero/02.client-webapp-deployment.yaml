@@ -26,6 +26,22 @@ data:
             }
         }
     }
+  status.conf: |
+    server {
+      listen 80;
+      location /nginx_status {
+        stub_status on;
+        access_log off;
+        allow 127.0.0.1;
+        deny all;
+      }
+      
+      location /health {
+        access_log off;
+        return 200 "healthy\n";
+        add_header Content-Type text/plain;
+      }
+    }
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -46,9 +62,12 @@ spec:
     spec:
       containers:
       - name: axis-zero-app
-        image: marcosjunior184/axis-zero-client:latest  # Replace with your image
+        image: marcosjunior184/axis-zero-client:latest
         ports:
         - containerPort: 80
+          name: http
+        - containerPort: 3001
+          name: metrics
         volumeMounts:
         - name: nginx-config
           mountPath: /etc/nginx/nginx.conf
@@ -60,6 +79,37 @@ spec:
           limits:
             memory: "128Mi"
             cpu: "100m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 80
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 5
+
+
+      # Nginx metrics exporter sidecar
+      - name: nginx-exporter
+        image: nginx/nginx-prometheus-exporter:latest
+        ports:
+        - containerPort: 9113
+          name: metrics
+        args:
+          - '-nginx.scrape-uri'
+          - 'http://localhost:80/nginx_status'
+        resources:
+          requests:
+            memory: "32Mi"
+            cpu: "10m"
+          limits:
+            memory: "64Mi"
+            cpu: "50m"
+
       volumes:
       - name: nginx-config
         configMap:
@@ -74,7 +124,12 @@ spec:
   selector:
     app: axis-zero-app
   ports:
-    - protocol: TCP
-      port: 80
+    - port: 80 
       targetPort: 80
-  type: ClusterIP
+      protocol: TCP
+      name: http
+    - port: 9113
+      targetPort: 9113
+      protocol: TCP
+      name: nginx-metrics
+#type: ClusterIP

@@ -2,19 +2,21 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: cloudflared-config
+  namespace: axis-zero
 data:
   config.yaml: |
     tunnel: YOUR_TUNNEL_ID  # Replace with your tunnel ID
     credentials-file: /etc/cloudflared/credentials.json
     ingress:
       - hostname: your-app.your-domain.com  # Replace with your domain
-        service: http://axis-zero-app:80
+        service: http://axisZero.ca:80
       - service: http_status:404
 ---
 apiVersion: v1
 kind: Secret
 metadata:
   name: cloudflared-credentials
+  namespace: axis-zero
 type: Opaque
 data:
   credentials.json: YOUR_BASE64_ENCODED_CREDENTIALS  # Replace with your credentials
@@ -23,6 +25,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: cloudflared-tunnel
+  namespace: axis-zero
 spec:
   replicas: 1
   selector:
@@ -54,6 +57,9 @@ spec:
           limits:
             memory: "64Mi"
             cpu: "50m"
+        ports:
+        - containerPort: 2000
+          name: metrics
       volumes:
       - name: cloudflared-config
         configMap:
@@ -61,3 +67,23 @@ spec:
       - name: cloudflared-credentials
         secret:
           secretName: cloudflared-credentials
+
+---
+
+# Service for metrics
+apiVersion: v1
+kind: Service
+metadata:
+  name: cloudflared-metrics
+  namespace: monitoring
+  labels:
+    app: cloudflared-tunnel
+spec:
+  ports:
+  - port: 2000
+    targetPort: 2000
+    protocol: TCP
+    name: metrics
+  selector:
+    app: cloudflared-tunnel
+  clusterIP: None
