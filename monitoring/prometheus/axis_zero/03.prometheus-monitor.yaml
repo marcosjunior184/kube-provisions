@@ -1,0 +1,14 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: axis-zero-monitor
+  namespace: monitoring
+spec:
+  namespaceSelector:
+    matchNames: ["axis-zero"]
+  selector:
+    matchLabels:
+      app: axis-zero-app
+  endpoints:
+  - port: metrics
+    path: /metrics

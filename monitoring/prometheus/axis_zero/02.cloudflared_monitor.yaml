@@ -1,0 +1,17 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: axis-zero-cloudflared-tunnel
+  namespace: monitoring
+spec:
+  selector:
+    matchLabels:
+      app: axis-zero-app
+  endpoints:
+  - port: cloudflared-tunnel  # Scrapes nginx exporter on port 9113
+    interval: 30s
+    path: /metrics
+    scrapeTimeout: 10s
+  namespaceSelector:
+    any: true
+    
