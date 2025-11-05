@@ -119,6 +119,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: axis-zero-service
+  app: axis-zero-app
   namespace: axis-zero
 spec:
   selector:

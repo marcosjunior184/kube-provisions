@@ -8,8 +8,10 @@ data:
     tunnel: YOUR_TUNNEL_ID  # Replace with your tunnel ID
     credentials-file: /etc/cloudflared/credentials.json
     ingress:
-      - hostname: your-app.your-domain.com  # Replace with your domain
-        service: http://axisZero.ca:80
+      - hostname: axisZero.ca  # Replace with your domain
+        service: http://axis-zero-service:80
+      - hostname: www.axisZero.ca  # Replace with your domain
+        service: http://axis-zero-service:80
       - service: http_status:404
 ---
 apiVersion: v1
@@ -58,7 +60,7 @@ spec:
             memory: "64Mi"
             cpu: "50m"
         ports:
-        - containerPort: 2000
+        - containerPort: 20241
           name: metrics
       volumes:
       - name: cloudflared-config
@@ -75,13 +77,14 @@ apiVersion: v1
 kind: Service
 metadata:
   name: cloudflared-metrics
-  namespace: monitoring
+  app: cloudflared-tunnel
+  namespace: axis-zero
   labels:
     app: cloudflared-tunnel
 spec:
   ports:
-  - port: 2000
-    targetPort: 2000
+  - port: 20241
+    targetPort: 20241
     protocol: TCP
     name: metrics
   selector:

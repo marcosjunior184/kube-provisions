@@ -6,9 +6,11 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app: axis-zero-app
+      app: cloudflared-tunnel
+  namespaceSelector:
+    - axis-zero
   endpoints:
-  - port: cloudflared-tunnel  # Scrapes nginx exporter on port 9113
+  - port: metrics  # Scrapes on port 20241
     interval: 30s
     path: /metrics
     scrapeTimeout: 10s
