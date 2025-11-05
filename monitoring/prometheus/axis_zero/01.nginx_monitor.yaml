@@ -8,7 +8,7 @@ spec:
     matchLabels:
       app: axis-zero-app
   endpoints:
-  - port: nginx-metrics  # Scrapes nginx exporter on port 9113
+  - port: nginx-metrics  # Scrapeson port 9113
     interval: 30s
     path: /metrics
     scrapeTimeout: 10s
