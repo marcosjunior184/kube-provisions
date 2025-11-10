@@ -1,0 +1,32 @@
+# networkpolicy-torrent-strict.yaml
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: pod-isolation
+  namespace: media-downloader
+spec:
+  podSelector: {}
+# Or
+  # podSelector:
+  #   matchLabels:
+  #     app: torrent-client
+  policyTypes:
+  - Ingress
+  - Egress
+  # COMPLETELY BLOCKED - no network access
+
+
+  #If on the same namespace
+
+  apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: block-torrent-network
+  namespace: default
+spec:
+  podSelector:
+    matchLabels:
+      app: torrent-client
+  policyTypes:
+  - Ingress
+  - Egress

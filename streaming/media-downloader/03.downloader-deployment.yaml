@@ -1,0 +1,47 @@
+# qbittorrent-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: qbittorrent
+  namespace: media-downloader
+spec:
+  replicas: 1  # Only need one instance
+  selector:
+    matchLabels:
+      app: torrent-client
+  template:
+    metadata:
+      labels:
+        app: torrent-client
+    spec:
+      containers:
+      - name: qbittorrent
+        image: linuxserver/qbittorrent:latest
+        env:
+        - name: PUID
+          value: "1000"
+        - name: PGID
+          value: "1000"
+        - name: TZ
+          value: "America/New_York"
+        - name: WEBUI_PORT
+          value: "8080"
+        volumeMounts:
+        - name: config
+          mountPath: /config
+        - name: downloads
+          mountPath: /downloads
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+      volumes:
+      - name: config
+        persistentVolumeClaim:
+          claimName: qbittorrent-config-pvc
+      - name: downloads
+        persistentVolumeClaim:
+          claimName: downloads-pvc
