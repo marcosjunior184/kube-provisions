@@ -1,0 +1,16 @@
+# traefik-ingressroute-simple.yaml
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: caddy-local-routes
+  namespace: caddy-system
+spec:
+  entryPoints:
+    - web
+    - websecure
+  routes:
+  - match: Host(`A.local`) || Host(`B.local`) || Host(`C.local`)
+    kind: Rule
+    services:
+    - name: caddy-internal
+      port: 80
