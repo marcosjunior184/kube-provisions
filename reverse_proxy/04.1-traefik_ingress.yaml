@@ -1,0 +1,41 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: caddy-local-routes
+  namespace: proxy
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
+    # Some ingress controllers support this annotation for multiple hosts
+    nginx.ingress.kubernetes.io/server-alias: "net.local proxmox.local"
+spec:
+  rules:
+  - host: casaos.local
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: caddy-internal
+            port:
+              number: 80
+  - host: net.local
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: caddy-internal
+            port:
+              number: 80
+  - host: proxmox.local
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: caddy-internal
+            port:
+              number: 80

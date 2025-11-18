@@ -3,13 +3,13 @@ apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
 metadata:
   name: caddy-local-routes
-  namespace: caddy-system
+  namespace: proxy
 spec:
   entryPoints:
     - web
     - websecure
   routes:
-  - match: Host(`A.local`) || Host(`B.local`) || Host(`C.local`)
+  - match: Host(`casaos.local`) || Host(`net.local`) || Host(`proxmox.local`)
     kind: Rule
     services:
     - name: caddy-internal

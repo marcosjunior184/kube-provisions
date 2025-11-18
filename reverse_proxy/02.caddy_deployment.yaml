@@ -5,44 +5,28 @@ metadata:
   namespace: proxy
 data:
   Caddyfile: |
-    casaos.local {
-      reverse_proxy app-a-service:8080
-    }
-    
-    grafana.local {
-      reverse_proxy app-b-service:3000
-    }
-    
-    proxmox.local {
-      reverse_proxy app-c-service:9000
-    }
-
-    router.local {
-      reverse_proxy app-c-service:9000
-    }
-
-
+  
     :80 {
     
       # Handle A.local - Application A
-      handle Host(`A.local`) {
-        reverse_proxy app-a-service:8080 {
+      handle Host(`casaos.local`) {
+        reverse_proxy 192.168.8.221:80 {
           header_up X-Forwarded-Host {host}
           header_up X-Real-IP {remote}
         }
       }
       
       # Handle B.local - Application B
-      handle Host(`B.local`) {
-        reverse_proxy app-b-service:3000 {
+      handle Host(`net.local`) {
+        reverse_proxy 192.168.8.1:80 {
           header_up X-Forwarded-Host {host}
           header_up X-Real-IP {remote}
         }
       }
       
       # Handle C.local - Application C
-      handle Host(`C.local`) {
-        reverse_proxy app-c-service:9000 {
+      handle Host(`proxmox.local`) {
+        reverse_proxy 192.168.8.220:8006 {
           header_up X-Forwarded-Host {host}
           header_up X-Real-IP {remote}
         }
@@ -80,7 +64,11 @@ spec:
         volumeMounts:
         - name: caddy-config
           mountPath: /etc/caddy
-        args: ["--config", "/etc/caddy/Caddyfile"]
+        args: 
+          - "caddy"
+          - "run"
+          - "--config"
+          - "/etc/caddy/Caddyfile"
       volumes:
       - name: caddy-config
         configMap:
