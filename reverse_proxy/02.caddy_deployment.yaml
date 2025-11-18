@@ -8,29 +8,43 @@ data:
   
     :80 {
     
-      # Handle A.local - Application A
-      handle Host(`casaos.local`) {
-        reverse_proxy 192.168.8.221:80 {
-          header_up X-Forwarded-Host {host}
-          header_up X-Real-IP {remote}
+
+
+      handle {
+
+        @casaos host casaos.local
+        handle @casaos {
+          reverse_proxy 192.168.8.221:80 {
+            header_up X-Forwarded-Host {host}
+            header_up X-Real-IP {remote}
+          }
         }
       }
+      
+
+      # Handle A.local - Application A
+      # handle Host(`casaos.local`) {
+      #   reverse_proxy 192.168.8.221:80 {
+      #     header_up X-Forwarded-Host {host}
+      #     header_up X-Real-IP {remote}
+      #   }
+      # }
       
       # Handle B.local - Application B
-      handle Host(`net.local`) {
-        reverse_proxy 192.168.8.1:80 {
-          header_up X-Forwarded-Host {host}
-          header_up X-Real-IP {remote}
-        }
-      }
+      # handle Host(`net.local`) {
+      #   reverse_proxy 192.168.8.1:80 {
+      #     header_up X-Forwarded-Host {host}
+      #     header_up X-Real-IP {remote}
+      #   }
+      # }
       
-      # Handle C.local - Application C
-      handle Host(`proxmox.local`) {
-        reverse_proxy 192.168.8.220:8006 {
-          header_up X-Forwarded-Host {host}
-          header_up X-Real-IP {remote}
-        }
-      }
+      # # Handle C.local - Application C
+      # handle Host(`proxmox.local`) {
+      #   reverse_proxy 192.168.8.220:8006 {
+      #     header_up X-Forwarded-Host {host}
+      #     header_up X-Real-IP {remote}
+      #   }
+      # }
       
       # Default response for unknown hosts
       handle {
