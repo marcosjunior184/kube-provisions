@@ -1,16 +1,68 @@
 # traefik-ingressroute-simple.yaml
+# apiVersion: traefik.containo.us/v1alpha1
+# kind: IngressRoute
+# metadata:
+#   name: caddy-local-routes
+#   namespace: proxy
+# spec:
+#   entryPoints:
+#     - web
+#     - websecure
+#   routes:
+#   - match: Host(`casaos.local`) || Host(`net.local`) || Host(`proxmox.local`)
+#     kind: Rule
+#     services:
+#     - name: caddy-internal
+#       port: 80
+
 apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
 metadata:
-  name: caddy-local-routes
-  namespace: proxy
+  name: proxy-ingressroute
+  namespace: default
 spec:
   entryPoints:
-    - web
-    - websecure
+  - web
+  - websecure
+  
   routes:
-  - match: Host(`casaos.local`) || Host(`net.local`) || Host(`proxmox.local`)
-    kind: Rule
-    services:
-    - name: caddy-internal
-      port: 80
+    # CasaOs
+    - match: Host(`casaos.local`)
+      kind: Rule
+      entryPoints:
+        - websecure
+      services:
+        - name: casaos-external-ip-service
+          port: 80
+          namespace: reverse_proxy
+    # Proxmox
+    - match: Host(`proxmox.local`)
+      kind: Rule
+      entryPoints:
+        - websecure
+      services:
+        - name: proxmox-external-ip-service
+          port: 8006
+          namespace: reverse_proxy
+    # Grafana
+    - match: Host(`grafana.local`)
+      kind: Rule
+      entryPoints:
+        - websecure
+      services:
+        - name: grafana
+          port: 80
+          namespace: monitoring
+    # Net
+    - match: Host(`net.local`)
+      kind: Rule
+      entryPoints:
+        - websecure
+      services:
+        - name: net-external-ip-service
+          port: 8080
+          namespace: reverse_proxy
+
+  tls:
+    secretName: local-tls
+    
