@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Service
 metadata: 
   name: casaos-external-ip-service
-  namespace: reverse_proxy
+  namespace: proxy
 spec:
   ports:
     - port: 80
@@ -11,10 +11,10 @@ spec:
 ---
 
 apiVersion: v1
-kind: EndPoints
+kind: Endpoints
 metadata:
   name: casaos-external-ip-service
-  namespace: reverse_proxy
+  namespace: proxy
 subsets:
   - addresses:
       - ip:  192.168.8.221

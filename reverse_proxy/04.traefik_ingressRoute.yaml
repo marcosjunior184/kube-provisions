@@ -19,36 +19,32 @@ apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
   name: proxy-ingressroute
-  namespace: default
+  namespace: proxy
 spec:
   entryPoints:
-  - web
-  - websecure
+    - web
+    - websecure
   
   routes:
     # CasaOs
     - match: Host(`casaos.local`)
       kind: Rule
-      entryPoints:
-        - websecure
       services:
         - name: casaos-external-ip-service
           port: 80
-          namespace: reverse_proxy
+          namespace: proxy
     # Proxmox
     - match: Host(`proxmox.local`)
       kind: Rule
-      entryPoints:
-        - websecure
       services:
         - name: proxmox-external-ip-service
           port: 8006
-          namespace: reverse_proxy
+            #scheme: https
+            #serversTransport: insecure-skip-verify
+          namespace: proxy
     # Grafana
     - match: Host(`grafana.local`)
       kind: Rule
-      entryPoints:
-        - websecure
       services:
         - name: grafana
           port: 80
@@ -56,13 +52,10 @@ spec:
     # Net
     - match: Host(`net.local`)
       kind: Rule
-      entryPoints:
-        - websecure
       services:
         - name: net-external-ip-service
           port: 8080
-          namespace: reverse_proxy
+          namespace: proxy
 
   tls:
     secretName: local-tls
-    
