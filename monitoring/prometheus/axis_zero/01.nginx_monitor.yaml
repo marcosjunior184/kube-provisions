@@ -6,11 +6,12 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app: axis-zero-app
+      app: axis-zero-app 
+  namespaceSelector:
+    matchNames:
+      - axis-zero
   endpoints:
   - port: nginx-metrics  # Scrapeson port 9113
     interval: 30s
     path: /metrics
     scrapeTimeout: 10s
-  namespaceSelector:
-    any: true

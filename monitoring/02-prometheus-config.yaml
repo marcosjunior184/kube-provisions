@@ -67,3 +67,80 @@ data:
           - source_labels: [__meta_kubernetes_pod_name]
             action: replace
             target_label: kubernetes_pod_name
+        
+      - job_name: 'services-monitoring'
+        kubernetes_sd_configs:
+          - role: endpoints
+        relabel_configs:
+          # Only scrape services with monitoring=enabled label
+          - source_labels: [__meta_kubernetes_service_label_monitoring]
+            action: keep
+            regex: enabled
+          # Only scrape ports named "metrics"
+          - source_labels: [__meta_kubernetes_endpoint_port_name]
+            action: keep
+            regex: metrics
+          # Add useful labels
+          - action: labelmap
+            regex: __meta_kubernetes_service_label_(.+)
+          - source_labels: [__meta_kubernetes_namespace]
+            action: replace
+            target_label: namespace
+          - source_labels: [__meta_kubernetes_service_name]
+            action: replace
+            target_label: service_name
+
+
+      - job_name: 'axis-zero-service'
+        kubernetes_sd_configs:
+          - role: endpoints
+            namespaces:
+              names: []  # All namespaces
+        relabel_configs:
+          # Match services with monitoring=enabled label
+          - source_labels: [__meta_kubernetes_service_label_monitoring]
+            action: keep
+            regex: enabled
+          - source_labels: [__meta_kubernetes_service_name]
+            action: keep
+            regex: axis-zero-service
+          # Use port named "metrics"
+          - source_labels: [__meta_kubernetes_endpoint_port_name]
+            action: keep
+            regex: metrics
+          # Add labels
+          - action: labelmap
+            regex: __meta_kubernetes_service_label_(.+)
+          - source_labels: [__meta_kubernetes_namespace]
+            action: replace
+            target_label: namespace
+          - source_labels: [__meta_kubernetes_service_name]
+            action: replace
+            target_label: service_name
+
+      - job_name: 'cloudflared-metrics-service-monitoring'
+        kubernetes_sd_configs:
+          - role: endpoints
+            namespaces:
+              names: []  # All namespaces
+        relabel_configs:
+          # Match services with monitoring=enabled label
+          - source_labels: [__meta_kubernetes_service_label_monitoring]
+            action: keep
+            regex: enabled
+          - source_labels: [__meta_kubernetes_service_name]
+            action: keep
+            regex: cloudflared-metrics-service
+          # Use port named "metrics"
+          - source_labels: [__meta_kubernetes_endpoint_port_name]
+            action: keep
+            regex: metrics
+          # Add labels
+          - action: labelmap
+            regex: __meta_kubernetes_service_label_(.+)
+          - source_labels: [__meta_kubernetes_namespace]
+            action: replace
+            target_label: namespace
+          - source_labels: [__meta_kubernetes_service_name]
+            action: replace
+            target_label: service_name
