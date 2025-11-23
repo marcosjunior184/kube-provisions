@@ -5,23 +5,22 @@ metadata:
   namespace: axis-zero
 data:
   config.yaml: |
-    tunnel: YOUR_TUNNEL_ID  # Replace with your tunnel ID
-    credentials-file: /etc/cloudflared/credentials.json
+   
+    tunnel: ff90f9fa-bf7b-4326-bf5a-47f92670b80e  # Replace with your tunnel ID
+   
+    credentials-file: /etc/cloudflared/credentials/credentials.json
+    
+    metrics: 0.0.0.0:20241
+    metrics-update-freq: 5s
+    protocol: http2
+    loglevel: info
+
     ingress:
-      - hostname: axisZero.ca  # Replace with your domain
+      - hostname: axiszero.ca  # Replace with your domain
         service: http://axis-zero-service:80
-      - hostname: www.axisZero.ca  # Replace with your domain
+      - hostname: www.axiszero.ca  # Replace with your domain
         service: http://axis-zero-service:80
       - service: http_status:404
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: cloudflared-credentials
-  namespace: axis-zero
-type: Opaque
-data:
-  credentials.json: YOUR_BASE64_ENCODED_CREDENTIALS  # Replace with your credentials
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -44,13 +43,14 @@ spec:
         args:
         - tunnel
         - --config
-        - /etc/cloudflared/config.yaml
+        - /etc/cloudflared/config/config.yaml
         - run
         volumeMounts:
         - name: cloudflared-config
-          mountPath: /etc/cloudflared
-        - name: cloudflared-credentials
-          mountPath: /etc/cloudflared
+          mountPath: /etc/cloudflared/config
+          readOnly: true
+        - name: credentials
+          mountPath: /etc/cloudflared/credentials
           readOnly: true
         resources:
           requests:
@@ -66,9 +66,9 @@ spec:
       - name: cloudflared-config
         configMap:
           name: cloudflared-config
-      - name: cloudflared-credentials
+      - name: credentials
         secret:
-          secretName: cloudflared-credentials
+          secretName: cloudflare-axis-zero-tunnel-credentials
 
 ---
 
@@ -76,11 +76,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: cloudflared-metrics
-  app: cloudflared-tunnel
+  name: cloudflared-metrics-service
   namespace: axis-zero
   labels:
     app: cloudflared-tunnel
+    monitoring: "enabled"
 spec:
   ports:
   - port: 20241
@@ -89,4 +89,4 @@ spec:
     name: metrics
   selector:
     app: cloudflared-tunnel
-  clusterIP: None
+#  clusterIP: None

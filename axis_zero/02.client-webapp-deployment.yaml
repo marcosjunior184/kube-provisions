@@ -12,19 +12,32 @@ data:
     http {
         include /etc/nginx/mime.types;
         default_type application/octet-stream;
+        
         server {
             listen 80;
+           
             server_name localhost;
+           
             root /usr/share/nginx/html;
             index index.html;
+           
+
+            location /nginx_status {
+              stub_status on;
+              access_log off;
+              allow all;
+            }
+
             location / {
                 try_files $uri $uri/ /index.html;
             }
+           
             location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg)$ {
                 expires 1y;
                 add_header Cache-Control "public, immutable";
             }
         }
+
     }
   status.conf: |
     server {
@@ -63,11 +76,10 @@ spec:
       containers:
       - name: axis-zero-app
         image: marcosjunior184/axis-zero-client:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 80
           name: http
-        - containerPort: 3001
-          name: metrics
         volumeMounts:
         - name: nginx-config
           mountPath: /etc/nginx/nginx.conf
@@ -79,18 +91,18 @@ spec:
           limits:
             memory: "128Mi"
             cpu: "100m"
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: 80
-          initialDelaySeconds: 30
-          periodSeconds: 10
-        readinessProbe:
-          httpGet:
-            path: /health
-            port: 80
-          initialDelaySeconds: 5
-          periodSeconds: 5
+#        livenessProbe:
+#          httpGet:
+#            path: /health
+#            port: 80
+#          initialDelaySeconds: 30
+#          periodSeconds: 10
+#        readinessProbe:
+#          httpGet:
+#            path: /health
+#            port: 80
+#          initialDelaySeconds: 5
+#          periodSeconds: 5
 
 
       # Nginx metrics exporter sidecar
@@ -114,13 +126,16 @@ spec:
       - name: nginx-config
         configMap:
           name: axis-zero-config
+
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: axis-zero-service
-  app: axis-zero-app
   namespace: axis-zero
+  labels:
+    monitoring: "enabled"
+    app: axis-zero-app
 spec:
   selector:
     app: axis-zero-app
@@ -132,5 +147,5 @@ spec:
     - port: 9113
       targetPort: 9113
       protocol: TCP
-      name: nginx-metrics
+      name: metrics
 #type: ClusterIP
