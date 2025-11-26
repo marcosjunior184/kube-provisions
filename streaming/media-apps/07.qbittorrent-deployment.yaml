@@ -1,26 +1,25 @@
-# sonarr-deployment.yaml
+# qbittorrent-deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: sonarr
+  name: qbittorrent
   namespace: streaming
-  labels:
-    app: sonarr
 spec:
-  replicas: 1
+  replicas: 1  # Only need one instance
   selector:
     matchLabels:
-      app: sonarr
+      app: torrent-client
   template:
     metadata:
       labels:
-        app: sonarr
+        app: torrent-client
     spec:
       containers:
-      - name: sonarr
-        image: linuxserver/sonarr:latest
+      - name: qbittorrent
+        image: linuxserver/qbittorrent:latest
         ports:
-        - containerPort: 8989
+        - containerPort: 8080  # ← Web UI & API port
+        - containerPort: 6881  # ← BitTorrent protocol port
         env:
         - name: PUID
           value: "1000"
@@ -28,12 +27,11 @@ spec:
           value: "1000"
         - name: TZ
           value: "America/New_York"
+        - name: WEBUI_PORT
+          value: "8080"
         volumeMounts:
         - name: config
           mountPath: /config
-        - name: tv
-          mountPath: /tv
-          subPath: tv
         - name: downloads
           mountPath: /downloads
         resources:
@@ -42,27 +40,31 @@ spec:
             cpu: "100m"
           limits:
             memory: "512Mi"
-            cpu: "300m"
+            cpu: "500m"
       volumes:
       - name: config
         persistentVolumeClaim:
-          claimName: sonarr-config-pvc
-      - name: tv
-        persistentVolumeClaim:
-          claimName: media-pvc
+          claimName: qbittorrent-config-pvc
       - name: downloads
         persistentVolumeClaim:
-          claimName: downloads-pvc
+          claimName: downloads-pvic
+
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: sonarr
+  name: qbittorrent
   namespace: streaming
 spec:
   selector:
-    app: sonarr
+    app: torrent-client
   ports:
-  - port: 8989
-    targetPort: 8989
+  - name: webui
+    port: 8080           # ← Service port (external)
+    targetPort: 8080     # ← Container port (internal)
+    protocol: TCP
+  - name: bittorrent
+    port: 6881           # ← Service port (external)  
+    targetPort: 6881     # ← Container port (internal)
+    protocol: TCP
   type: NodePort

@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jellyfin
+  namespace: streaming
+  labels:
+    app: jellyfin
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jellyfin
+  template:
+    metadata:
+      labels:
+        app: jellyfin
+    spec:
+      containers:
+      - name: jellyfin
+        image: jellyfin/jellyfin:latest
+        ports:
+        - containerPort: 8096  # Jellyfin's default port
+        env:
+        - name: PUID
+          value: "1000"
+        - name: PGID
+          value: "1000"
+        - name: TZ
+          value: "America/New_York"
+        volumeMounts:
+        - name: config
+          mountPath: /config
+        - name: media
+          mountPath: /media
+          subPath: media  # Mount the media subdirectory
+        - name: cache
+          mountPath: /cache
+        resources:
+          requests:
+            memory: "512Mi"  # Jellyfin needs more memory
+            cpu: "200m"
+          limits:
+            memory: "2Gi"    # Can use more when transcoding
+            cpu: "1000m"
+      volumes:
+      - name: config
+        persistentVolumeClaim:
+          claimName: jellyfin-config-pvc
+      - name: media
+        persistentVolumeClaim:
+          claimName: media-pvc  # Same PVC as Sonarr for media library
+      - name: cache
+        persistentVolumeClaim:
+          claimName: jellyfin-cache-pvc
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jellyfin
+  namespace: streaming
+spec:
+  selector:
+    app: jellyfin
+  ports:
+  - port: 8096
+    targetPort: 8096
+  type: NodePort

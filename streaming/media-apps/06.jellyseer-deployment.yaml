@@ -3,7 +3,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: jellyseerr
-  namespace: default
+  namespace: streaming
   labels:
     app: jellyseerr
 spec:
@@ -48,11 +48,11 @@ apiVersion: v1
 kind: Service
 metadata:
   name: jellyseerr
-  namespace: default
+  namespace: streaming
 spec:
   selector:
     app: jellyseerr
   ports:
   - port: 5055
     targetPort: 5055
-  type: ClusterIP
+  type: NodePort
