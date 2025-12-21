@@ -89,6 +89,18 @@ spec:
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
+metadata: 
+  name: nzbget-config-pvc
+  namespace: streaming
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
 metadata:
   name: media-pvc
   namespace: streaming
@@ -103,11 +115,34 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: downloads-pvc
+  name: jackett-config-pvc
   namespace: streaming
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 50Gi
+      storage: 1Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: rdt-client-config-pvc
+  namespace: streaming
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+#apiVersion: v1
+#kind: PersistentVolumeClaim
+#metadata:
+#  name: downloads-pvc
+#  namespace: streaming
+#spec:
+#  accessModes:
+#    - ReadWriteOnce
+#  resources:
+#    requests:
+#      storage: 50Gi

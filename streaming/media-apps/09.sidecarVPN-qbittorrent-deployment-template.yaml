@@ -1,0 +1,251 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: openvpn-config
+  namespace: streaming
+data:
+  config.ovpn: |
+    client
+    dev tun
+    proto tcp
+    remote us-lax.prod.surfshark.com 1443
+    remote-random
+    nobind
+    tun-mtu 1280
+    mssfix 1240
+    #fragment 1300
+    #mtu-disc yes
+    
+    ping 15
+    ping-restart 0
+    reneg-sec 0
+
+    remote-cert-tls server
+
+    auth-user-pass
+
+    #comp-lzo
+    verb 3
+    fast-io
+    cipher AES-256-CBC
+
+    auth SHA512
+
+    route-nopull
+    route 0.0.0.0 0.0.0.0
+
+    route 10.42.0.0 255.255.0.0 net_gateway
+    route 10.43.0.0 255.255.0.0 net_gateway
+
+    <ca>
+    -----BEGIN CERTIFICATE-----
+    -----END CERTIFICATE-----
+    </ca>
+    key-direction 1
+    <tls-auth>
+    #
+    # 2048 bit OpenVPN static key
+    #
+    -----BEGIN OpenVPN Static key V1-----
+    -----END OpenVPN Static key V1-----
+    </tls-auth>
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: qbittorrent-config-file
+  namespace: streaming
+data:
+  qBittorrent.conf: |
+    [AutoRun]
+    enabled=false
+    program=
+    
+    [BitTorrent]
+    Session\AddTorrentStopped=false
+    Session\DefaultSavePath=/downloads/
+    Session\Port=6881
+    Session\QueueingSystemEnabled=true
+    Session\SSL\Port=63824
+    Session\ShareLimitAction=Stop
+    Session\TempPath=/downloads/incomplete/
+    
+    [LegalNotice]
+    Accepted=true
+    
+    [Meta]
+    MigrationVersion=8
+    
+    [Network]
+    Cookies=@Invalid()
+    PortForwardingEnabled=false
+    Proxy\AuthEnabled=false
+    Proxy\HostnameLookupEnabled=false
+    Proxy\IP=127.0.0.1
+    Proxy\Port=8888
+    Proxy\Type=1
+    Proxy\Profiles\BitTorrent=true
+    Proxy\Profiles\Misc=true
+    Proxy\Profiles\RSS=true
+    Proxy\Profiles\UseProxyForTracker=true
+    Proxy\UseProxyOnlyForTorrents=false
+   
+    Network\Interface=tun0
+    Network\InterfaceName=tun0
+
+    [Preferences]
+    WebUI\HostHeaderValidation=false
+    Connection\PortRangeMin=6881
+    Connection\UPnP=false
+    Downloads\SavePath=/downloads/
+    Downloads\TempPath=/downloads/incomplete/
+    WebUI\Address=*
+    WebUI\ServerDomains=*
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: qbittorrent
+  namespace: streaming
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: qbittorrent
+  template:
+    metadata:
+      labels:
+        app: qbittorrent
+    spec:
+      hostNetwork: false
+      containers:
+      # Gluetun VPN with SurfShark
+      - name: gluetun
+        image: qmcgaw/gluetun
+        env:
+        - name: SERVER_HOSTNAMES
+          value: "us-lax.prod.surfshark.com"
+        - name: VPN_SERVICE_PROVIDER
+          value: "surfshark"
+        - name: VPN_TYPE
+          value: "openvpn"
+        - name: OPENVPN_USER
+          value: "<add>"
+        - name: OPENVPN_PASSWORD
+          value: "<add>"
+        - name: VPN_CONFIG
+          value: "/config/vpn/config.ovpn"
+        - name: OPENVPN_PROTOCOL
+          value: "tcp"
+        - name: OPENVPN_MTU
+          value: "1280"
+        - name: OPENVPN_MSSFIX
+          value: "1240"
+            #- name: OPENVPN_TUN_MTU
+          #   value: "1280"
+  
+        - name: FIREWALL_VPN_INPUT_PORTS
+          value: "8080,6881,6882,6883,6884,6885,6886,6887,6888,6889"
+        
+            # - name: OPENVPN_MTU_DISCOVERY
+          #   value: "yes"  # Let OpenVPN auto-detect
+        - name: LOG_LEVEL
+          value: "debug"
+       
+        - name: DNS_ADDRESSES
+          value: "1.1.1.1,8.8.8.8"
+        - name: DNS_ADDRESS
+          value: "1.1.1.1"  # Explicit fallback
+        - name: DNS_SEARCH_DOMAINS
+          value: ""  # CRITICAL: Empty to disable suffix search
+        - name: DNS_KEEP_NAMESERVER
+          value: "off"  # Don't preserve K3s DNS
+        - name: DNS_UPSTREAM_RESOLVERS
+          value: "cloudflare"
+        - name: DNS_UPDATE_PERIOD
+          value: "24h"
+        
+        securityContext:
+          capabilities:
+            add:
+            - NET_ADMIN
+        volumeMounts:
+        - name: gluetun-data
+          mountPath: /gluetun
+        - name: tun-device
+          mountPath: /dev/net/tun
+        - name: vpn-config
+          mountPath: /config/vpn
+
+      # qBittorrent container
+      - name: qbittorrent
+        image: lscr.io/linuxserver/qbittorrent:latest
+        env:
+        - name: PUID
+          value: "1000"
+        - name: PGID
+          value: "1000"
+        - name: TZ
+          value: "Europe/London"
+        - name: REVERSE_PROXY
+          value: "false"  
+        - name: WEBUI_PORT
+          value: "8080"
+        - name: QBITTORRENT_PROXY_TYPE
+          value: "HTTP"
+        - name: QBITTORRENT_PROXY_HOST
+          value: "127.0.0.1"
+        - name: QBITTORRENT_PROXY_PORT
+          value: "8888"
+        - name: QBITTORRENT_PROXY_AUTH
+          value: "false"
+       
+        volumeMounts:
+        - name: qbittorrent-config
+          mountPath: /config
+        - name: media
+          mountPath: /data/media/downloads
+      volumes:
+      - name: qbittorrent-config
+        persistentVolumeClaim:
+          claimName: qbittorrent-config-pvc
+      - name: media
+        persistentVolumeClaim:
+          claimName: media-pvc
+      - name: gluetun-data
+        emptyDir: {}
+      - name: vpn-config
+        configMap:
+          name: openvpn-config
+      - name: tun-device
+        hostPath:
+          path: /dev/net/tun
+          type: CharDevice
+      - name: qbittorrent-config-file
+        configMap:
+          name: qbittorrent-config-file
+---
+# Service for internal cluster access
+apiVersion: v1
+kind: Service
+metadata:
+  name: qbittorrent-service
+  namespace: streaming
+spec:
+  selector:
+    app: qbittorrent
+  ports:
+  - name: webui
+    port: 8080
+    targetPort: 8080
+    nodePort: 31774
+    protocol: TCP
+  - name: torrent-tcp
+    port: 6881
+    targetPort: 6881
+    protocol: TCP
+  - name: torrent-udp
+    port: 6881
+    targetPort: 6881
+    protocol: UDP
+  type: NodePort

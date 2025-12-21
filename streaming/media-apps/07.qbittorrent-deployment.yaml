@@ -1,70 +1,140 @@
-# qbittorrent-deployment.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: qbittorrent-config-file
+  namespace: streaming
+data:
+  qBittorrent.conf: |
+    [AutoRun]
+    enabled=false
+    program=
+
+    [BitTorrent]
+    Session\AddTorrentStopped=false
+    Session\DefaultSavePath=/data/media/downloads/
+    Session\Port=6881
+    Session\QueueingSystemEnabled=true
+    Session\SSL\Port=63824
+    Session\ShareLimitAction=Stop
+    Session\TempPath=/data/media/downloads/incomplete/
+
+    [LegalNotice]
+    Accepted=true
+
+    [Meta]
+    MigrationVersion=8
+
+    [Network]
+    Cookies=@Invalid()
+    PortForwardingEnabled=false
+    Proxy\AuthEnabled=false
+    Proxy\HostnameLookupEnabled=false
+    Proxy\IP=127.0.0.1
+    Proxy\Port=8888
+    Proxy\Type=1
+    Proxy\Profiles\BitTorrent=true
+    Proxy\Profiles\Misc=true
+    Proxy\Profiles\RSS=true
+    Proxy\Profiles\UseProxyForTracker=true
+    Proxy\UseProxyOnlyForTorrents=false
+
+    # Network\Interface=tun0
+    #Network\InterfaceName=tun0
+
+    [Preferences]
+    WebUI\HostHeaderValidation=false
+    Connection\PortRangeMin=6881
+    Connection\UPnP=false
+    Downloads\SavePath=/data/media/downloads/
+    Downloads\TempPath=/data/media/downloads/incomplete/
+    WebUI\Address=*
+    WebUI\ServerDomains=*
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: qbittorrent
   namespace: streaming
 spec:
-  replicas: 1  # Only need one instance
+  replicas: 1
   selector:
     matchLabels:
-      app: torrent-client
+      app: qbittorrent
   template:
     metadata:
       labels:
-        app: torrent-client
+        app: qbittorrent
     spec:
+      hostNetwork: false
       containers:
       - name: qbittorrent
-        image: linuxserver/qbittorrent:latest
-        ports:
-        - containerPort: 8080  # ← Web UI & API port
-        - containerPort: 6881  # ← BitTorrent protocol port
+        image: lscr.io/linuxserver/qbittorrent:4.6.5
         env:
         - name: PUID
           value: "1000"
         - name: PGID
           value: "1000"
         - name: TZ
-          value: "America/New_York"
+          value: "Europe/London"
+        - name: REVERSE_PROXY
+          value: "false"
         - name: WEBUI_PORT
           value: "8080"
+        - name: QBITTORRENT_PROXY_TYPE
+          value: "HTTP"
+        - name: QBITTORRENT_PROXY_HOST
+          value: "127.0.0.1"
+        - name: QBITTORRENT_PROXY_PORT
+          value: "8888"
+        - name: QBITTORRENT_PROXY_AUTH
+          value: "false"
         volumeMounts:
-        - name: config
+        - name: qbittorrent-config
           mountPath: /config
-        - name: downloads
-          mountPath: /downloads
-        resources:
-          requests:
-            memory: "256Mi"
-            cpu: "100m"
-          limits:
-            memory: "512Mi"
-            cpu: "500m"
+        - name: media
+          mountPath: /data/media/downloads
+          subPath: downloads
       volumes:
-      - name: config
+      - name: qbittorrent-config
         persistentVolumeClaim:
           claimName: qbittorrent-config-pvc
-      - name: downloads
+      - name: media
         persistentVolumeClaim:
-          claimName: downloads-pvic
-
+          claimName: media-pvc
+      - name: gluetun-data
+        emptyDir: {}
+      - name: vpn-config
+        configMap:
+          name: openvpn-config
+      - name: tun-device
+        hostPath:
+          path: /dev/net/tun
+          type: CharDevice
+      - name: qbittorrent-config-file
+        configMap:
+          name: qbittorrent-config-file
 ---
+# Service for internal cluster access
 apiVersion: v1
 kind: Service
 metadata:
-  name: qbittorrent
+  name: qbittorrent-service
   namespace: streaming
 spec:
   selector:
-    app: torrent-client
+    app: qbittorrent
   ports:
   - name: webui
-    port: 8080           # ← Service port (external)
-    targetPort: 8080     # ← Container port (internal)
+    port: 8080
+    targetPort: 8080
+    nodePort: 31774
     protocol: TCP
-  - name: bittorrent
-    port: 6881           # ← Service port (external)  
-    targetPort: 6881     # ← Container port (internal)
+  - name: torrent-tcp
+    port: 6881
+    targetPort: 6881
     protocol: TCP
+  - name: torrent-udp
+    port: 6881
+    targetPort: 6881
+    protocol: UDP
   type: NodePort

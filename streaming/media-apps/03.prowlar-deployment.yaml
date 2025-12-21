@@ -31,13 +31,13 @@ spec:
         volumeMounts:
         - name: config
           mountPath: /config
-        resources:
-          requests:
-            memory: "128Mi"
-            cpu: "100m"
-          limits:
-            memory: "256Mi"
-            cpu: "200m"
+            #resources:
+            #requests:
+            #memory: "128Mi"
+            #cpu: "100m"
+            #limits:
+            #memory: "1Gi"
+            #cpu: "1000m"
       volumes:
       - name: config
         persistentVolumeClaim:
@@ -55,4 +55,5 @@ spec:
   ports:
   - port: 9696
     targetPort: 9696
+    nodePort: 31284
   type: NodePort

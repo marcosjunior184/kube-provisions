@@ -31,28 +31,22 @@ spec:
         volumeMounts:
         - name: config
           mountPath: /config
-        - name: tv
-          mountPath: /tv
-          subPath: tv
-        - name: downloads
-          mountPath: /downloads
-        resources:
-          requests:
-            memory: "256Mi"
-            cpu: "100m"
-          limits:
-            memory: "512Mi"
-            cpu: "300m"
+        - name: media
+          mountPath: /data/media/
+            #resources:
+            #requests:
+            # memory: "256Mi"
+            # cpu: "100m"
+            #limits:
+            #memory: "1Gi"
+            #cpu: "1000m"
       volumes:
       - name: config
         persistentVolumeClaim:
           claimName: sonarr-config-pvc
-      - name: tv
+      - name: media
         persistentVolumeClaim:
           claimName: media-pvc
-      - name: downloads
-        persistentVolumeClaim:
-          claimName: downloads-pvc
 ---
 apiVersion: v1
 kind: Service
@@ -65,4 +59,5 @@ spec:
   ports:
   - port: 8989
     targetPort: 8989
+    nodePort: 30286
   type: NodePort

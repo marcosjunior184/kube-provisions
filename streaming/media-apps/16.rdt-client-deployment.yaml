@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rdt-client
+  namespace: streaming
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rdt-client
+  template:
+    metadata:
+      labels:
+        app: rdt-client
+    spec:
+      containers:
+      - name: rdt-client
+        image: rogerfar/rdtclient:latest
+        ports:
+        - containerPort: 6500 # Web UI Port
+        env:
+        - name: PUID
+          value: "1000"
+        - name: PGID
+          value: "1000"
+        - name: TZ
+          value: "America/New_York" # Set your timezone
+        volumeMounts:
+        - name: config
+          mountPath: /data/db
+        - name: media 
+          mountPath: /data/media/downloads
+          subPath: downloads
+        - name: media
+          mountPath: /data/media/handoff
+          subPath: handoff
+        - name: media
+          mountPath: /data/media/
+      volumes:
+      - name: config
+        persistentVolumeClaim:
+          claimName: rdt-client-config-pvc # Create this PVC first
+      - name: media
+        persistentVolumeClaim:
+          claimName: media-pvc # Your main downloads PVC
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rdt-client-service
+  namespace: streaming
+spec:
+  selector:
+    app: rdt-client
+  ports:
+  - port: 6500
+    targetPort: 6500
+      #nodePort: 30286
+  type: NodePort

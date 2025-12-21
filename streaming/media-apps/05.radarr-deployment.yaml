@@ -31,21 +31,20 @@ spec:
         volumeMounts:
         - name: config
           mountPath: /config
-        - name: movies
-          mountPath: /movies
-          subPath: movies
-        resources:
-          requests:
-            memory: "256Mi"
-            cpu: "100m"
-          limits:
-            memory: "512Mi"
-            cpu: "300m"
+        - name: media
+          mountPath: /data/media 
+            #resources:
+            #requests:
+            #memory: "256Mi"
+            #cpu: "100m"
+            #limits:
+            #memory: "1Gi"
+            #cpu: "1000m"
       volumes:
       - name: config
         persistentVolumeClaim:
           claimName: radarr-config-pvc
-      - name: movies
+      - name: media
         persistentVolumeClaim:
           claimName: media-pvc
 
@@ -61,4 +60,5 @@ spec:
   ports:
   - port: 7878
     targetPort: 7878
+    nodePort: 30726
   type: NodePort

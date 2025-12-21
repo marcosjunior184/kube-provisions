@@ -31,17 +31,16 @@ spec:
         - name: config
           mountPath: /config
         - name: media
-          mountPath: /media
-          subPath: media  # Mount the media subdirectory
+          mountPath: /data/media
         - name: cache
           mountPath: /cache
-        resources:
-          requests:
-            memory: "512Mi"  # Jellyfin needs more memory
-            cpu: "200m"
-          limits:
-            memory: "2Gi"    # Can use more when transcoding
-            cpu: "1000m"
+            #resources:
+            #requests:
+            #memory: "512Mi"  # Jellyfin needs more memory
+            #cpu: "200m"
+            #limits:
+            #memory: "4Gi"    # Can use more when transcoding
+            #cpu: "1000m"
       volumes:
       - name: config
         persistentVolumeClaim:
@@ -65,4 +64,5 @@ spec:
   ports:
   - port: 8096
     targetPort: 8096
+    nodePort: 30593
   type: NodePort
