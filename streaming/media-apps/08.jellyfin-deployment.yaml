@@ -21,6 +21,8 @@ spec:
         ports:
         - containerPort: 8096  # Jellyfin's default port
         env:
+        - name: LIBVA_DRIVER_NAME
+          value: iHD
         - name: PUID
           value: "1000"
         - name: PGID
@@ -28,10 +30,18 @@ spec:
         - name: TZ
           value: "America/New_York"
         volumeMounts:
+        - name: gpu-device
+          mountPath: /dev/dri
         - name: config
           mountPath: /config
         - name: media
           mountPath: /data/media
+        - name: media
+          mountPath: /data/meadi/tv
+          subPath: tv
+        - name: media
+          mountPath: /data/meadia/movies
+          subPath: movies
         - name: cache
           mountPath: /cache
             #resources:
@@ -42,6 +52,10 @@ spec:
             #memory: "4Gi"    # Can use more when transcoding
             #cpu: "1000m"
       volumes:
+      - name: gpu-device
+        hostPath:
+          path: /dev/dri
+          type: Directory
       - name: config
         persistentVolumeClaim:
           claimName: jellyfin-config-pvc
