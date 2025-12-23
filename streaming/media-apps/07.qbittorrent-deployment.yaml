@@ -42,7 +42,10 @@ data:
     #Network\InterfaceName=tun0
 
     [Preferences]
+    WebUI\CSRFProtection=false
+    WebUI\ClickjackingProtection=false
     WebUI\HostHeaderValidation=false
+    WebUI\Enabled=true
     Connection\PortRangeMin=6881
     Connection\UPnP=false
     Downloads\SavePath=/data/media/downloads/
@@ -94,6 +97,9 @@ spec:
         - name: media
           mountPath: /data/media/downloads
           subPath: downloads
+        - name: qbittorrent-config-file
+          mountPath: /config/qBittorrent/qBittorrent.conf
+          subPath: qBittorrent.conf
       volumes:
       - name: qbittorrent-config
         persistentVolumeClaim:
