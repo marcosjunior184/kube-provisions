@@ -1,0 +1,112 @@
+# Check current ZFS pools and datasets
+sudo zpool list
+sudo zfs list
+
+# Check current mount points
+sudo df -hT
+
+# Check RAID configuration
+sudo zpool status
+
+---
+
+# Create parent dataset (optional)
+sudo zfs create tank/nas
+
+# Create datasets with quotas for each folder
+sudo zfs create tank/nas/media
+sudo zfs set quota=2.5T tank/nas/media
+sudo zfs set compression=lz4 tank/nas/media  # Optional: enable compression
+
+sudo zfs create tank/nas/backup
+sudo zfs set quota=500G tank/nas/backup
+sudo zfs set compression=lz4 tank/nas/backup
+
+sudo zfs create tank/nas/k3s_memory
+sudo zfs set quota=1T tank/nas/k3s_memory
+sudo zfs set compression=zstd tank/nas/k3s_memory  # ZSTD good for mixed data
+
+# Verify
+sudo zfs list -r tank/nas -o name,quota,used,available,compression,mountpoint
+
+---
+
+[If with already has a dataset]
+
+# Let's say you have data at /mnt/nas
+# Create new datasets first
+sudo zfs create tank/media
+sudo zfs create tank/backup
+sudo zfs create tank/k3s_memory
+
+# Set quotas
+sudo zfs set quota=2.5T tank/media
+sudo zfs set quota=500G tank/backup
+sudo zfs set quota=1T tank/k3s_memory
+
+# Move data to appropriate folders (if organizing)
+sudo mkdir /tank/media/movies  # etc.
+# Move files as needed...
+
+---
+
+[Customized mount points]
+
+# If you want traditional /mnt/nas/* structure
+sudo zfs set mountpoint=/mnt/nas/media tank/nas/media
+sudo zfs set mountpoint=/mnt/nas/backup tank/nas/backup
+sudo zfs set mountpoint=/mnt/nas/k3s_memory tank/nas/k3s_memory
+
+# Or if you want them nested under a parent
+sudo zfs set mountpoint=/mnt/nas tank/nas
+# Subdirectories will be auto-created
+
+---
+
+NFS sharing 
+
+# Enable sharing on each dataset
+sudo zfs set sharenfs="rw=@192.168.1.0/24,no_root_squash" tank/nas/media
+sudo zfs set sharenfs="rw=@192.168.1.0/24,no_root_squash" tank/nas/backup
+sudo zfs set sharenfs="rw=@192.168.1.0/24,no_root_squash" tank/nas/k3s_memory
+
+# Or with different permissions per share
+sudo zfs set sharenfs="rw=@192.168.1.100/32,ro=@192.168.1.0/24" tank/nas/backup
+
+# Apply changes
+sudo zfs share -a
+
+# Check NFS shares
+sudo showmount -e localhost
+sudo exportfs -v
+
+oooor 
+
+
+# /etc/exports
+/mnt/nas/media      192.168.1.0/24(rw,sync,no_subtree_check,no_root_squash)
+/mnt/nas/backup     192.168.1.0/24(rw,sync,no_subtree_check,no_root_squash)
+/mnt/nas/k3s_memory 192.168.1.0/24(rw,sync,no_subtree_check,no_root_squash)
+
+
+
+---
+
+
+optimization 
+
+
+# Set recordsize based on use case (performance optimization)
+sudo zfs set recordsize=1M tank/nas/media    # Good for large media files
+sudo zfs set recordsize=128K tank/nas/backup # Good for mixed file sizes
+sudo zfs set recordsize=8K tank/nas/k3s_memory # Good for small files
+
+# Enable atime=off for better performance
+sudo zfs set atime=off tank/nas/media
+
+# Set ACLs if needed
+sudo zfs set acltype=posixacl tank/nas
+sudo zfs set aclinherit=passthrough tank/nas
+
+# Check all properties
+sudo zfs get all tank/nas/media | head -20
