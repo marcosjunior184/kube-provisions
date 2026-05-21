@@ -1,0 +1,70 @@
+#
+# Middleware for redirecting 
+#
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: redirect-https
+  namespace: homarr
+spec:
+  redirectScheme:
+    scheme: https
+    permanent: true
+---
+#
+# Self signed skip verify
+#
+apiVersion: traefik.io/v1alpha1
+kind: ServersTransport
+metadata:
+  name: homarr-transport
+  namespace: homarr
+spec:
+  insecureSkipVerify: true  # If your Proxmox uses self-signed cert
+---
+#
+# HTTP Ingress routes
+#
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: homarr-http-ingress-routes
+  namespace: homarr
+spec:
+  entryPoints:
+    - web
+  routes:
+    # Proxmox DELL 1
+    - match: Host(`homarr.home.net`)
+      kind: Rule
+      middlewares:
+        - name: redirect-https
+      services:
+      - name: homarr
+        port: 80
+        namespace: homarr
+        # scheme: http
+---
+#
+# HTTPS Ingress routes
+#
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: homarr-https-ingress-routes
+  namespace: homarr
+spec:
+  entryPoints:
+    - websecure
+  tls:
+    secretName: local-tls
+  routes:
+    #Proxmox
+    - match: Host(`homarr.home.net`)
+      kind: Rule
+      services:
+      - name: homarr
+        port: 80
+        namespace: homarr
+        # scheme: https
+        serversTransport: homarr-transport

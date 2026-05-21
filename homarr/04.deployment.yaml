@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: homarr
+  namespace: homarr
+  labels:
+    app: homarr
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: homarr
+  template:
+    metadata:
+      labels:
+        app: homarr
+    spec:
+      containers:
+        - name: homarr
+          image: ghcr.io/homarr-labs/homarr:v1.58.1
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 7575
+              protocol: TCP
+          env:
+            - name: TZ
+              value: "America/Regina"
+            - name: LOG_LEVEL
+              value: "info"
+            - name: SECRET_ENCRYPTION_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: homarr-secrets
+                  key: SECRET_ENCRYPTION_KEY
+          # resources:
+          #   requests:
+          #     memory: "256Mi"
+          #     cpu: "250m"
+          #   limits:
+          #     memory: "512Mi"
+          #     cpu: "500m"
+          volumeMounts:
+            - name: database
+              mountPath: /app/data
+            - name: images
+              mountPath: /app/public/images
+      volumes:
+        - name: database
+          persistentVolumeClaim:
+            claimName: homarr-database
+        - name: images
+          persistentVolumeClaim:
+            claimName: homarr-images
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: homarr
+  namespace: homarr
+  labels:
+    app: homarr
+spec:
+  type: LoadBalancer
+  selector:
+    app: homarr
+  ports:
+    - port: 80
+      targetPort: 7575
+      protocol: TCP
+      name: http
