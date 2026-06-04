@@ -1,0 +1,171 @@
+#
+# Custom config map for nextcloud 
+#
+# ###################################################
+# NOTE: Might need to replace ${METALLB_IP} manually #
+#                                                    #
+# TODO: Check if bash envsubst will work properly.   #
+# ###################################################
+#
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nextcloud-config
+  namespace: cloud
+data:
+  custom.config.php: |
+    <?php
+    $CONFIG = array (
+      'trusted_domains' => 
+      array (
+        0 => 'localhost',
+        1 => 'nextcloud',  # Service name
+        2 => 'nextcloud.cloud.svc.cluster.local',  # FQDN
+        3 => '${METALLB_IP}',  # MetalLB IP
+        4 => 'nextcloud.home.net',
+        5 => 'nextcloud.madrhs.net',
+      ),
+      'overwrite.cli.url' => 'https://home.net',
+      'overwriteprotocol' => 'https',
+    );
+---
+#
+# Nextcloud deployment
+#
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nextcloud
+  namespace: cloud
+  labels:
+    app: nextcloud
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nextcloud
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: nextcloud
+    spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1002
+        fsGroup: 1002
+      containers:
+      - name: nextcloud
+        image: nextcloud:production-apache
+        securityContext:
+          runAsUser: 1000
+          runAsGroup: 1002     
+        env:
+        - name: NEXTCLOUD_KEEP_PERMISSIONS
+          value: "true"
+        - name: APACHE_RUN_USER
+          value: '#1000'
+        - name: APACHE_RUN_GROUP
+          value: '#1002'
+        - name: APACHE_SERVER_NAME
+          value: "nextcloud.home.net"
+        - name: SERVER_NAME
+          value: "nextcloud.home.net"
+        - name: MYSQL_HOST
+          value: mariadb
+        - name: MYSQL_DATABASE
+          valueFrom:
+            secretKeyRef:
+              name: nextcloud-secrets
+              key: nextcloud-db-name
+        - name: MYSQL_USER
+          valueFrom:
+            secretKeyRef:
+              name: nextcloud-secrets
+              key: nextcloud-db-user
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: nextcloud-secrets
+              key: nextcloud-db-password
+        - name: NEXTCLOUD_ADMIN_USER
+          valueFrom:
+            secretKeyRef:
+              name: nextcloud-secrets
+              key: nextcloud-admin-user
+        - name: NEXTCLOUD_ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: nextcloud-secrets
+              key: nextcloud-admin-password
+        - name: PHP_MEMORY_LIMIT
+          value: "512M"
+        - name: PHP_UPLOAD_LIMIT
+          value: "10G"
+        ports:
+        - containerPort: 80
+          name: http
+        - containerPort: 443
+          name: https
+        volumeMounts:
+        - name: nextcloud-html
+          mountPath: /var/www/html  
+        - name: nextcloud-data
+          mountPath: /var/www/html/data
+          subPath: data
+        - name: nextcloud-data
+          mountPath: /var/www/html/custom_apps
+          subPath: custom_apps
+        - name: nextcloud-data
+          mountPath: /var/www/html/themes
+          subPath: themes
+        - name: nextcloud-data
+          mountPath: /var/www/html/config
+          subPath: config
+        - name: nextcloud-custom-config
+          mountPath: /var/www/html/config/custom.config.php
+          subPath: custom.config.php
+        - name: nextcloud-tmp
+          mountPath: /tmp
+      volumes:
+      - name: nextcloud-html
+        persistentVolumeClaim:
+          claimName: nextcloud-pvc
+      - name: nextcloud-data
+        persistentVolumeClaim:
+          claimName: nas-cloud-data-pvc
+      - name: nextcloud-custom-config
+        configMap:
+          name: nextcloud-config
+          defaultMode: 0644
+      - name: nextcloud-tmp
+        emptyDir:
+          sizeLimit: "10Gi"
+---
+#
+# Service for loadbalancer
+#
+apiVersion: v1
+kind: Service
+metadata:
+  name: nextcloud
+  namespace: cloud
+  labels:
+    app: nextcloud
+spec:
+  type: LoadBalancer
+  selector:
+    app: nextcloud
+  ports:
+  - name: http
+    port: 80
+    targetPort: 80
+    protocol: TCP
+  - name: https
+    port: 443
+    targetPort: 443
+    protocol: TCP
