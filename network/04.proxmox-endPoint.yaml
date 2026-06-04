@@ -1,0 +1,51 @@
+#
+# Dell 1 main Proxmox
+#
+apiVersion: v1
+kind: Service
+metadata: 
+  name: proxmox-main-external-ip-service
+  namespace: network
+spec:
+  ports:
+    - port: 8006
+      targetPort: 8006
+      protocol: TCP
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: proxmox-main-external-ip-service
+  namespace: network
+subsets:
+  - addresses:
+      - ip:  ${PROXMOX_ZIMA}
+    ports:
+      - port: 8006
+        protocol: TCP
+---
+#
+# Zima ms Proxmox
+#
+apiVersion: v1
+kind: Service
+metadata: 
+  name: proxmox-zima-external-ip-service
+  namespace: network
+spec:
+  ports:
+    - port: 8006
+      targetPort: 8006
+      protocol: TCP
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: proxmox-zima-external-ip-service
+  namespace: network
+subsets:
+  - addresses:
+      - ip:  ${PROXMOX_DELL1}
+    ports:
+      - port: 8006
+        protocol: TCP

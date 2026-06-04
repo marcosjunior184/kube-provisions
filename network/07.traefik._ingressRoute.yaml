@@ -1,0 +1,132 @@
+#
+# Middleware for redirecting 
+#
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: redirect-https
+  namespace: network
+spec:
+  redirectScheme:
+    scheme: https
+    permanent: true
+---
+#
+# Self signed skip verify
+#
+apiVersion: traefik.io/v1alpha1
+kind: ServersTransport
+metadata:
+  name: proxmox-transport
+  namespace: network
+spec:
+  insecureSkipVerify: true  # If your Proxmox uses self-signed cert
+---
+#
+# Not really needed, need to update and modify HA to accept the redirect.
+#
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: force-ha-host
+  namespace: network
+spec:
+  headers:
+    # This should override the Host header
+    customRequestHeaders:
+      Host: ${HA_IP}
+    # Also add port in X-Forwarded-Port
+    customResponseHeaders:
+      X-Forwarded-Port: "8123"
+---
+#
+# HTTP Ingress routes
+#
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: network-http-ingress-routes
+  namespace: network
+spec:
+  entryPoints:
+    - web
+  routes:
+    # Proxmox DELL 1
+    - match: Host(`proxmox.home.net`)
+      kind: Rule
+      middlewares:
+        - name: redirect-https
+      services:
+      - name: proxmox-main-external-ip-service
+        port: 8006
+        namespace: network
+        scheme: http
+    # Proxmox Zima
+    - match: Host(`proxmox.zima.home.net`)
+      kind: Rule
+      middlewares:
+        - name: redirect-https
+      services:
+      - name: proxmox-zima-external-ip-service
+        port: 8006
+        namespace: network
+        scheme: http
+    # GLI
+    - match: Host(`gli.home.net`)
+      kind: Rule
+      services:
+      - name: net-external-ip-service
+        port: 80
+        namespace: network
+        scheme: http
+    # GLI LUCI
+    - match: Host(`luci.home.net`)
+      kind: Rule
+      services:
+      - name: net-luci-external-ip-service
+        port: 8080
+        namespace: network
+        scheme: http
+    - match: Host(`homeassistant.home.net`)
+      kind: Rule
+      middlewares:
+        - name: force-ha-host
+      services: 
+      - name: ha-external-ip-service
+        port: 8123
+        namespace: network
+        scheme: http
+---
+#
+# HTTPS Ingress routes
+#
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: network-https-ingress-routes
+  namespace: network
+spec:
+  entryPoints:
+    - websecure
+  tls:
+    secretName: local-tls
+  routes:
+    #Proxmox
+    - match: Host(`proxmox.home.net`)
+      kind: Rule
+      services:
+      - name: proxmox-main-external-ip-service
+        port: 8006
+        namespace: network
+        scheme: https
+        serversTransport: proxmox-transport
+    - match: Host(`proxmox.zima.home.net`)
+      kind: Rule
+      middlewares:
+        - name: redirect-https
+      services:
+      - name: proxmox-zima-external-ip-service
+        port: 8006
+        namespace: network
+        scheme: https
+        serversTransport: proxmox-transport

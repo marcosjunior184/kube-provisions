@@ -1,0 +1,57 @@
+#
+# Main GLI net
+#
+apiVersion: v1
+kind: Service
+metadata: 
+  name: net-external-ip-service
+  namespace: network
+spec:
+  ports:
+    - port: 80
+      targetPort: 80
+      protocol: TCP
+---
+#
+# Main GLI net
+#
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: net-external-ip-service
+  namespace: network
+subsets:
+  - addresses:
+      - ip: ${GLI_NET}
+    ports: 
+      - port: 80
+        protocol: TCP
+---
+#
+# Main GLI LUCI net
+#
+apiVersion: v1
+kind: Service
+metadata: 
+  name: net-luci-external-ip-service
+  namespace: network
+spec:
+  ports:
+    - port: 8080
+      targetPort: 8080
+      protocol: TCP
+---
+#
+# Main GLI LUCI net
+#
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: net-luci-external-ip-service
+  namespace: network
+subsets:
+  - addresses:
+      - ip: ${GLI_NET}
+    ports: 
+      - port: 8080
+        protocol: TCP
