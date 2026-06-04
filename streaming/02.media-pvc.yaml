@@ -1,0 +1,198 @@
+#
+# Prowlarr config
+#
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: prowlarr-config-pvc
+  namespace: streaming
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+#
+# Sonarr config
+#
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: sonarr-config-pvc
+  namespace: streaming
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+#
+# Radarr config
+#
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: radarr-config-pvc
+  namespace: streaming
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+#
+# Jellyseer config
+#
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: jellyseerr-config-pvc
+  namespace: streaming
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+#
+# Jellyfin config
+#
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: jellyfin-config-pvc
+  namespace: streaming
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+#
+# Jellyfin cache
+#
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: jellyfin-cache-pvc
+  namespace: streaming
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 60Gi
+---
+#
+# Qbit config
+#
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: qbittorrent-config-pvc
+  namespace: streaming
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+#
+# Media config
+#
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: media-pvc
+  namespace: streaming
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 150Gi
+---
+#
+# rdt config
+#
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: rdt-client-config-pvc
+  namespace: streaming
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+#
+# tdarr config
+#
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: tdarr-pvc
+  namespace: streaming
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi  # Adjust size as needed
+---
+#
+# NAS config
+#
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nas-media-pvc
+  namespace: streaming
+spec:
+  storageClassName: nfs-client
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Ti
+
+#
+# -------------- NOT USED FOR NOW --------------
+#
+#
+# Jackett config
+#
+# apiVersion: v1
+# kind: PersistentVolumeClaim
+# metadata:
+#   name: jackett-config-pvc
+#   namespace: streaming
+# spec:
+#   accessModes:
+#     - ReadWriteOnce
+#   resources:
+#     requests:
+#       storage: 1Gi
+#---
+#
+# nzbget config
+#
+# apiVersion: v1
+# kind: PersistentVolumeClaim
+# metadata: 
+#   name: nzbget-config-pvc
+#   namespace: streaming
+# spec:
+#   accessModes:
+#     - ReadWriteOnce
+#   resources:
+#     requests:
+#       storage: 1Gi

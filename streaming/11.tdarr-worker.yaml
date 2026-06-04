@@ -1,0 +1,78 @@
+# tdarr-node-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tdarr-node
+  namespace: streaming
+  labels:
+    app: tdarr-node
+spec:
+  replicas: 1  # Scale this to add more node replicas
+  selector:
+    matchLabels:
+      app: tdarr-node
+  template:
+    metadata:
+      labels:
+        app: tdarr-node
+    spec:
+      containers:
+      - name: tdarr-node
+        image: haveagitgat/tdarr_node:latest
+        env:
+        - name: PUID
+          value: "1000"
+        - name: PGID
+          value: "1002"
+        # --- Required: Connection to your Tdarr Server ---
+        - name: serverURL
+          value: "http://tdarr.streaming.svc.cluster.local:8266"  # Kubernetes internal DNS for your server service
+          
+        # --- Node Identity ---
+        - name: nodeName
+          value: "k3s-node-1"  # Give each node a unique name
+          
+        # --- Worker Configuration (Start with these workers) [citation:4] ---
+        - name: transcodecpuWorkers
+          value: "2"  # Number of CPU transcoding workers
+        - name: healthcheckcpuWorkers
+          value: "1"  # Number of CPU health check workers
+        - name: transcodegpuWorkers  # Uncomment for GPU workers
+          value: "1"
+        # - name: healthcheckgpuWorkers
+        #   value: "0"
+        
+        # --- Optional: Node Priority (lower number = higher priority) [citation:4] ---
+        - name: priority
+          value: "0"
+          
+        # --- Optional: Start Paused ---
+        - name: startPaused
+          value: "false"
+          
+        # --- Performance & Logging [citation:4] ---
+        - name: pollInterval
+          value: "2000"
+        - name: maxLogSizeMB
+          value: "10"
+          
+        # --- Resource Limits ---
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "500m"
+          limits:
+            memory: "4Gi"
+            cpu: "2000m"
+        volumeMounts:
+        # IMPORTANT: The node needs access to the same media paths as the server
+        - name: nas-media
+          mountPath: /media  # Must match the server's media path structure
+        - name: temp-transcodes
+          mountPath: /temp
+      volumes:
+      - name: nas-media
+        persistentVolumeClaim:
+          claimName: nas-media-pvc
+      - name: temp-transcodes
+        emptyDir: {}

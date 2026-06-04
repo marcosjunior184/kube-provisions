@@ -1,0 +1,80 @@
+#
+# Prowlarr deployment
+#
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prowlarr
+  namespace: streaming
+  labels:
+    app: prowlarr
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prowlarr
+  template:
+    metadata:
+      labels:
+        app: prowlarr
+    spec:
+      dnsPolicy: "None"  
+      dnsConfig:
+        nameservers:
+        - ${NAME_SERVER_IP}
+        searches:
+        - default.svc.cluster.local
+        - svc.cluster.local
+        - cluster.local
+      containers:
+      - name: prowlarr
+        image: linuxserver/prowlarr:latest
+        ports:
+        - containerPort: 9696
+        env:
+        - name: PUID
+          value: "1000"
+        - name: PGID
+          value: "1000"
+        - name: TZ
+          value: "America/New_York"
+        volumeMounts:
+        - name: config
+          mountPath: /config
+      volumes:
+      - name: config
+        persistentVolumeClaim:
+          claimName: prowlarr-config-pvc
+---
+#
+# Prowlarr Node Port
+#
+apiVersion: v1
+kind: Service
+metadata:
+  name: prowlarr-node
+  namespace: streaming
+spec:
+  type: NodePort
+  selector:
+    app: prowlarr
+  ports:
+  - port: 9696
+    targetPort: 9696
+    nodePort: 31284
+---
+#
+# Prowlarr LoadBalancer
+#
+apiVersion: v1
+kind: Service
+metadata:
+  name: prowlarr
+  namespace: streaming
+spec:
+  type: LoadBalancer 
+  selector:
+    app: prowlarr
+  ports:
+  - port: 80
+    targetPort: 9696

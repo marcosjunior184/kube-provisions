@@ -1,0 +1,159 @@
+#
+# Middleware for redirecting 
+#
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: redirect-https
+  namespace: streaming
+spec:
+  redirectScheme:
+    scheme: https
+    permanent: true
+---
+#
+# HTTP Ingress routes
+#
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: streaming-http-ingress-routes
+  namespace: streaming
+spec:
+  entryPoints:
+    - web
+  routes:
+    # Jellyfin
+    - match: Host(`jellyfin.home.net`)
+      kind: Rule
+        #middlewares:
+        #- name: redirect-https
+      services:
+        - name: jellyfin
+          port: 80
+          namespace: streaming
+    # Jellyseerr
+    - match: Host(`jellyseerr.home.net`)
+      kind: Rule
+        #middlewares:
+        #- name: redirect-https
+      services:
+        - name: jellyseerr
+          port: 80
+          namespace: streaming
+    # Prowlerr
+    - match: Host(`prowlarr.home.net`)
+      kind: Rule
+        #middlewares:
+        #- name: redirect-https
+      services:
+        - name: prowlarr
+          port: 80
+          namespace: streaming
+    # Radarr
+    - match: Host(`radarr.home.net`)
+      kind: Rule
+        #middlewares:
+        #- name: redirect-https
+      services:
+        - name: radarr
+          port: 80
+          namespace: streaming 
+    # Sonarr
+    - match: Host(`sonarr.home.net`)
+      kind: Rule
+        #middlewares:
+        #- name: redirect-https
+      services:
+        - name: sonarr
+          port: 80
+          namespace: streaming
+    # rdt-client
+    - match: Host(`rdt.home.net`)
+      kind: Rule
+        #middlewares:
+        #- name: redirect-https
+      services:
+        - name: rdt-client-service
+          port: 80
+          namespace: streaming
+    # flaresolver
+    - match: Host(`flaresolverr.home.net`)
+      kind: Rule
+        #middlewares:
+        #- name: redirect-https
+      services:
+        - name: flaresolverr
+          port: 80
+          namespace: streaming   
+    # tdarr
+    - match: Host(`tdarr.home.net`)
+      kind: Rule
+      services:
+        - name: tdarr
+          port: 80
+          namespace: streaming
+---
+#
+# Ingress routes
+#
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: streaming-https-ingress-routes
+  namespace: streaming
+spec:
+  entryPoints:
+    - websecure
+  tls:
+    secretName: local-tls
+  routes:
+    # Jellyfin
+    - match: Host(`jellyfin.home.net`)
+      kind: Rule
+      services:
+        - name: jellyfin
+          port: 80
+          namespace: streaming
+    # Jellyseerr
+    - match: Host(`jellyseerr.home.net`)
+      kind: Rule
+      services:
+        - name: jellyseerr
+          port: 80
+          namespace: streaming
+    # Prowlerr
+    - match: Host(`prowlarr.home.net`)
+      kind: Rule
+      services:
+        - name: prowlarr
+          port: 80
+          namespace: streaming
+    # Radarr
+    - match: Host(`radarr.home.net`)
+      kind: Rule
+      services:
+        - name: radarr
+          port: 80
+          namespace: streaming
+    # Sonarr
+    - match: Host(`sonarr.home.net`)
+      kind: Rule
+      services:
+        - name: sonarr
+          port: 80
+          namespace: streaming
+    # rdt-client
+    - match: Host(`rdt.home.net`)
+      kind: Rule
+      services:
+        - name: rdt-client-service
+          port: 80
+          namespace: streaming
+    # flaresolver
+    - match: Host(`flaresolverr.home.net`)
+      kind: Rule
+      services:
+        - name: flaresolverr
+          port: 80
+          namespace: streaming

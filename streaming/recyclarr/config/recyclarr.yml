@@ -1,0 +1,18 @@
+sonarr:
+  sonarr:
+    base_url: !secret sonarr_url # Your Sonarr base URL
+    api_key: !secret sonarr_apikey # Your Sonarr API key
+    include:
+    # - template: trash_guides_sonarr_quality_definition_series
+    # - template: trash_guides_sonarr_quality_definition_anime
+    - config: custom_formats/sonarr_all_cf.yml # Imports every single CF from Trash Guides (optional)
+    - config: sonarr.yml
+
+radarr:
+  radarr:
+    base_url: !secret radarr_url # Your Radarr base URL
+    api_key: !secret radarr_apikey # Your Radarr API key
+    include:
+    # - template: radarr-quality-definition-movie # Enabling this will cause trouble finding releases for Optimized 4K/1080p since the minimum quality values from Trash Guides are too high
+    - config: custom_formats/radarr_all_cf.yml # Imports every single CF from Trash Guides (optional)
+    - config: radarr.yml

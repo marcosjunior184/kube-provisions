@@ -1,0 +1,1089 @@
+{
+  "mappings": [
+    {
+      "trash_id": "a69163b534969846c60b6b294e8ed7b3",
+      "name": "Asian Tier 01",
+      "service_id": 9
+    },
+    {
+      "trash_id": "4712302767772003bfeb01d1f5f0a6fd",
+      "name": "Asian Tier 02",
+      "service_id": 10
+    },
+    {
+      "trash_id": "0183b666f79529efb85df21b7a2cf913",
+      "name": "Asian Tier 03",
+      "service_id": 11
+    },
+    {
+      "trash_id": "ceb6ca558f4a3d47a00ebbdcb7fa7922",
+      "name": "Dual Audio Asian",
+      "service_id": 12
+    },
+    {
+      "trash_id": "44ccbcbc74506f208973e1463b11705f",
+      "name": "WiTH AD",
+      "service_id": 13
+    },
+    {
+      "trash_id": "c196536ea8122397c5854040d01f2aa7",
+      "name": "WiTH ASL",
+      "service_id": 14
+    },
+    {
+      "trash_id": "b40dc2e630723745aab9f1b94f4aab74",
+      "name": "WiTH BASL",
+      "service_id": 15
+    },
+    {
+      "trash_id": "0aef382c4ed4c5eb5d40109dfd351b72",
+      "name": "WiTH BSL",
+      "service_id": 16
+    },
+    {
+      "trash_id": "b2550eb333d27b75833e25b8c2557b38",
+      "name": "10bit",
+      "service_id": 17
+    },
+    {
+      "trash_id": "418f50b10f1907201b6cfdf881f467b7",
+      "name": "Anime Dual Audio",
+      "service_id": 18
+    },
+    {
+      "trash_id": "9c14d194486c4014d422adc64092d794",
+      "name": "Dubs Only",
+      "service_id": 19
+    },
+    {
+      "trash_id": "026d5aadd1a6b4e550b134cb6c72b3ca",
+      "name": "Uncensored",
+      "service_id": 20
+    },
+    {
+      "trash_id": "949c16fe0a8147f50ba82cc2df9411c9",
+      "name": "Anime BD Tier 01",
+      "service_id": 21
+    },
+    {
+      "trash_id": "ed7f1e315e000aef424a58517fa48727",
+      "name": "Anime BD Tier 02",
+      "service_id": 22
+    },
+    {
+      "trash_id": "096e406c92baa713da4a72d88030b815",
+      "name": "Anime BD Tier 03",
+      "service_id": 23
+    },
+    {
+      "trash_id": "30feba9da3030c5ed1e0f7d610bcadc4",
+      "name": "Anime BD Tier 04",
+      "service_id": 24
+    },
+    {
+      "trash_id": "545a76b14ddc349b8b185a6344e28b04",
+      "name": "Anime BD Tier 05",
+      "service_id": 25
+    },
+    {
+      "trash_id": "25d2afecab632b1582eaf03b63055f72",
+      "name": "Anime BD Tier 06",
+      "service_id": 26
+    },
+    {
+      "trash_id": "0329044e3d9137b08502a9f84a7e58db",
+      "name": "Anime BD Tier 07",
+      "service_id": 27
+    },
+    {
+      "trash_id": "c81bbfb47fed3d5a3ad027d077f889de",
+      "name": "Anime BD Tier 08",
+      "service_id": 28
+    },
+    {
+      "trash_id": "e3515e519f3b1360cbfc17651944354c",
+      "name": "Anime LQ Groups",
+      "service_id": 29
+    },
+    {
+      "trash_id": "b4a1b3d705159cdca36d71e57ca86871",
+      "name": "Anime Raws",
+      "service_id": 30
+    },
+    {
+      "trash_id": "e0014372773c8f0e1bef8824f00c7dc4",
+      "name": "Anime Web Tier 01",
+      "service_id": 31
+    },
+    {
+      "trash_id": "19180499de5ef2b84b6ec59aae444696",
+      "name": "Anime Web Tier 02",
+      "service_id": 32
+    },
+    {
+      "trash_id": "c27f2ae6a4e82373b0f1da094e2489ad",
+      "name": "Anime Web Tier 03",
+      "service_id": 33
+    },
+    {
+      "trash_id": "4fd5528a3a8024e6b49f9c67053ea5f3",
+      "name": "Anime Web Tier 04",
+      "service_id": 34
+    },
+    {
+      "trash_id": "29c2a13d091144f63307e4a8ce963a39",
+      "name": "Anime Web Tier 05",
+      "service_id": 35
+    },
+    {
+      "trash_id": "dc262f88d74c651b12e9d90b39f6c753",
+      "name": "Anime Web Tier 06",
+      "service_id": 36
+    },
+    {
+      "trash_id": "d2d7b8a9d39413da5f44054080e028a3",
+      "name": "v0",
+      "service_id": 37
+    },
+    {
+      "trash_id": "273bd326df95955e1b6c26527d1df89b",
+      "name": "v1",
+      "service_id": 38
+    },
+    {
+      "trash_id": "228b8ee9aa0a609463efca874524a6b8",
+      "name": "v2",
+      "service_id": 39
+    },
+    {
+      "trash_id": "0e5833d3af2cc5fa96a0c29cd4477feb",
+      "name": "v3",
+      "service_id": 40
+    },
+    {
+      "trash_id": "4fc15eeb8f2f9a749f918217d4234ad8",
+      "name": "v4",
+      "service_id": 41
+    },
+    {
+      "trash_id": "bd6dd5e043aa27ff4696a08d011c7d96",
+      "name": "1.0 Mono",
+      "service_id": 42
+    },
+    {
+      "trash_id": "834e534f103938853ffced4203b53e72",
+      "name": "2.0 Stereo",
+      "service_id": 43
+    },
+    {
+      "trash_id": "42cba7e38c7947a6d1d0a62580ee6d62",
+      "name": "3.0 Sound",
+      "service_id": 44
+    },
+    {
+      "trash_id": "1895195e84767de180653914ce207245",
+      "name": "4.0 Sound",
+      "service_id": 45
+    },
+    {
+      "trash_id": "3fbafa924f361e66fbc6187af82dfa85",
+      "name": "5.1 Surround",
+      "service_id": 46
+    },
+    {
+      "trash_id": "9fb6d778592c293467437593ef394bf1",
+      "name": "6.1 Surround",
+      "service_id": 47
+    },
+    {
+      "trash_id": "204c8c3e7315bb0ea81332774fa888d6",
+      "name": "7.1 Surround",
+      "service_id": 48
+    },
+    {
+      "trash_id": "a50b8a0c62274a7c38b09a9619ba9d86",
+      "name": "AAC",
+      "service_id": 49
+    },
+    {
+      "trash_id": "b6fbafa7942952a13e17e2b1152b539a",
+      "name": "ATMOS (undefined)",
+      "service_id": 50
+    },
+    {
+      "trash_id": "dbe00161b08a25ac6154c55f95e6318d",
+      "name": "DD",
+      "service_id": 51
+    },
+    {
+      "trash_id": "63487786a8b01b7f20dd2bc90dd4a477",
+      "name": "DD\u002B",
+      "service_id": 52
+    },
+    {
+      "trash_id": "4232a509ce60c4e208d13825b7c06264",
+      "name": "DD\u002B ATMOS",
+      "service_id": 53
+    },
+    {
+      "trash_id": "5964f2a8b3be407d083498e4459d05d0",
+      "name": "DTS",
+      "service_id": 54
+    },
+    {
+      "trash_id": "9d00418ba386a083fbf4d58235fc37ef",
+      "name": "DTS X",
+      "service_id": 55
+    },
+    {
+      "trash_id": "c1a25cd67b5d2e08287c957b1eb903ec",
+      "name": "DTS-ES",
+      "service_id": 56
+    },
+    {
+      "trash_id": "cfa5fbd8f02a86fc55d8d223d06a5e1f",
+      "name": "DTS-HD HRA",
+      "service_id": 57
+    },
+    {
+      "trash_id": "c429417a57ea8c41d57e6990a8b0033f",
+      "name": "DTS-HD MA",
+      "service_id": 58
+    },
+    {
+      "trash_id": "851bd64e04c9374c51102be3dd9ae4cc",
+      "name": "FLAC",
+      "service_id": 59
+    },
+    {
+      "trash_id": "3e8b714263b26f486972ee1e0fe7606c",
+      "name": "MP3",
+      "service_id": 60
+    },
+    {
+      "trash_id": "28f6ef16d61e2d1adfce3156ed8257e3",
+      "name": "Opus",
+      "service_id": 61
+    },
+    {
+      "trash_id": "30f70576671ca933adbdcfc736a69718",
+      "name": "PCM",
+      "service_id": 62
+    },
+    {
+      "trash_id": "1808e4b9cee74e064dfae3f1db99dbfe",
+      "name": "TrueHD",
+      "service_id": 63
+    },
+    {
+      "trash_id": "0d7824bb924701997f874e7ff7d4844a",
+      "name": "TrueHD ATMOS",
+      "service_id": 64
+    },
+    {
+      "trash_id": "44b6c964dad997577d793fd004a39224",
+      "name": "FR Anime FanSub",
+      "service_id": 65
+    },
+    {
+      "trash_id": "db13a377f7afb29975ea39470434d2ef",
+      "name": "FR Anime Tier 01",
+      "service_id": 66
+    },
+    {
+      "trash_id": "4e6134a384dbc0ef166234cc0e45d26d",
+      "name": "FR Anime Tier 02",
+      "service_id": 67
+    },
+    {
+      "trash_id": "db34d4357937fbfe89b63ba095f22155",
+      "name": "FR Anime Tier 03",
+      "service_id": 68
+    },
+    {
+      "trash_id": "84f0acbda9c0c9de783894fb66df25aa",
+      "name": "FanSUB",
+      "service_id": 69
+    },
+    {
+      "trash_id": "ea0bb4b6ba388992fad1092703b5ff7b",
+      "name": "FastSUB",
+      "service_id": 70
+    },
+    {
+      "trash_id": "34789ec3caa819f087e23bbf9999daf7",
+      "name": "VF2",
+      "service_id": 71
+    },
+    {
+      "trash_id": "0ce1e39a4676c6692ce47935278dac76",
+      "name": "VFB",
+      "service_id": 72
+    },
+    {
+      "trash_id": "2c29a39a4fdfd6d258799bc4c09731b9",
+      "name": "VFF",
+      "service_id": 73
+    },
+    {
+      "trash_id": "b6816a0e1d4b64bf3550ad3b74b009b6",
+      "name": "VFI",
+      "service_id": 74
+    },
+    {
+      "trash_id": "7a7f4e4f58bd1058440236d033a90b67",
+      "name": "VFQ",
+      "service_id": 75
+    },
+    {
+      "trash_id": "7ae924ee9b2f39df3283c6c0beb8a2aa",
+      "name": "VOF",
+      "service_id": 76
+    },
+    {
+      "trash_id": "802dd70b856c423a9b0cb7f34ac42be1",
+      "name": "VOQ",
+      "service_id": 77
+    },
+    {
+      "trash_id": "07a32f77690263bb9fda1842db7e273f",
+      "name": "VOSTFR",
+      "service_id": 78
+    },
+    {
+      "trash_id": "82085412d9a53ba8d8e46fc624eb701d",
+      "name": "VQ",
+      "service_id": 79
+    },
+    {
+      "trash_id": "d844321db5e126d2e7e46152f0706532",
+      "name": "FR HD Bluray Tier 01",
+      "service_id": 80
+    },
+    {
+      "trash_id": "3ba797e5dc13af4b8d9bb25e83d90de2",
+      "name": "FR LQ",
+      "service_id": 81
+    },
+    {
+      "trash_id": "b8e91cc8fb2bd96468fab74730c30d18",
+      "name": "FR Remux Tier 01",
+      "service_id": 82
+    },
+    {
+      "trash_id": "2f3422339d185eb227a324644a2fbfca",
+      "name": "FR Scene Groups",
+      "service_id": 83
+    },
+    {
+      "trash_id": "ddb8eaa9c85a549c50034d280539d54d",
+      "name": "FR WEB Tier 01",
+      "service_id": 84
+    },
+    {
+      "trash_id": "a4c51febd4d8b2a0db10a3c974f21d92",
+      "name": "FR WEB Tier 02",
+      "service_id": 85
+    },
+    {
+      "trash_id": "dbfc0a4b5cb4cbd693311c4482ae9683",
+      "name": "FR WEB Tier 03",
+      "service_id": 86
+    },
+    {
+      "trash_id": "955cbe14c274da55564e50234ca555ff",
+      "name": "German Anime Bluray Tier 01",
+      "service_id": 87
+    },
+    {
+      "trash_id": "9359e91ae245ff20a6747bd08191e24d",
+      "name": "German Anime Bluray Tier 02",
+      "service_id": 88
+    },
+    {
+      "trash_id": "4713f52901c85b44724ec7ff7bef0aba",
+      "name": "German Anime Bluray Tier 03",
+      "service_id": 89
+    },
+    {
+      "trash_id": "bf40cabd88c0025b03ad511d300d7394",
+      "name": "German Anime Scene",
+      "service_id": 90
+    },
+    {
+      "trash_id": "89bb526ec04af08433dee41e929fc965",
+      "name": "German Anime Web Tier 01",
+      "service_id": 91
+    },
+    {
+      "trash_id": "da3e14f96e3b487d6a7267f417d4885b",
+      "name": "German Anime Web Tier 02",
+      "service_id": 92
+    },
+    {
+      "trash_id": "7d7ad6fbd52cf0cc3764516ade32fa32",
+      "name": "German Anime Web Tier 03",
+      "service_id": 93
+    },
+    {
+      "trash_id": "9aa0ca0d2d66b6f6ee51fc630f46cf6f",
+      "name": "German 1080p Booster",
+      "service_id": 94
+    },
+    {
+      "trash_id": "b493cd40d8a3bbf2839127a706bdb673",
+      "name": "German 2160p Booster",
+      "service_id": 95
+    },
+    {
+      "trash_id": "a6a6c33d057406aaad978a6902823c35",
+      "name": "German LQ",
+      "service_id": 96
+    },
+    {
+      "trash_id": "d80c9f7cd2aad50271f1bd4e53125778",
+      "name": "German LQ (release title)",
+      "service_id": 97
+    },
+    {
+      "trash_id": "237eda4ef550a97da2c9d87b437e500b",
+      "name": "German Microsized",
+      "service_id": 98
+    },
+    {
+      "trash_id": "21d4ae0976f7a4c251884d26fc46183c",
+      "name": "German Subbed",
+      "service_id": 99
+    },
+    {
+      "trash_id": "7940b2fb0278f27cf4f70187f2be95d6",
+      "name": "German Bluray Tier 01",
+      "service_id": 100
+    },
+    {
+      "trash_id": "83b336a90d90d6b35ca673b007f80661",
+      "name": "German Bluray Tier 02",
+      "service_id": 101
+    },
+    {
+      "trash_id": "d8f8e1539827967e0e564833e6c08d33",
+      "name": "German Bluray Tier 03",
+      "service_id": 102
+    },
+    {
+      "trash_id": "da0f005f9c3edf34fc26e18dce8c6573",
+      "name": "German Remux Tier 01",
+      "service_id": 103
+    },
+    {
+      "trash_id": "6bc5ccd80a03e7abb8f556eecd174b73",
+      "name": "German Remux Tier 02",
+      "service_id": 104
+    },
+    {
+      "trash_id": "c2eec878fa1989599c226ce4c287d6a7",
+      "name": "German Scene",
+      "service_id": 105
+    },
+    {
+      "trash_id": "68be37323132b35cf333c81a2ac8fc16",
+      "name": "German Web Tier 01",
+      "service_id": 106
+    },
+    {
+      "trash_id": "f51b96a50b0e6196cb69724b7833d837",
+      "name": "German Web Tier 02",
+      "service_id": 107
+    },
+    {
+      "trash_id": "bda67c2c0aae257308a4723d92475b86",
+      "name": "German Web Tier 03",
+      "service_id": 108
+    },
+    {
+      "trash_id": "47435ece6b99a0b477caf360e79ba0bb",
+      "name": "x265 (HD)",
+      "service_id": 109
+    },
+    {
+      "trash_id": "9b64dff695c2115facf1b6ea59c9bd07",
+      "name": "x265 (no HDR/DV)",
+      "service_id": 110
+    },
+    {
+      "trash_id": "7c3a61a9c6cb04f52f1544be6d44a026",
+      "name": "DV Boost",
+      "service_id": 111
+    },
+    {
+      "trash_id": "505d871304820ba7106b693be6fe4a9e",
+      "name": "HDR",
+      "service_id": 112
+    },
+    {
+      "trash_id": "0c4b99df9206d2cfac3c05ab897dd62a",
+      "name": "HDR10\u002B Boost",
+      "service_id": 113
+    },
+    {
+      "trash_id": "2016d1676f5ee13a5b7257ff86ac9a93",
+      "name": "SDR",
+      "service_id": 114
+    },
+    {
+      "trash_id": "d6819cba26b1a6508138d25fb5e32293",
+      "name": "HD Bluray Tier 01",
+      "service_id": 115
+    },
+    {
+      "trash_id": "c2216b7b8aa545dc1ce8388c618f8d57",
+      "name": "HD Bluray Tier 02",
+      "service_id": 116
+    },
+    {
+      "trash_id": "9965a052eb87b0d10313b1cea89eb451",
+      "name": "Remux Tier 01",
+      "service_id": 117
+    },
+    {
+      "trash_id": "8a1d0c3d7497e741736761a1da866a2e",
+      "name": "Remux Tier 02",
+      "service_id": 118
+    },
+    {
+      "trash_id": "d0c516558625b04b363fa6c5c2c7cfd4",
+      "name": "WEB Scene",
+      "service_id": 119
+    },
+    {
+      "trash_id": "e6258996055b9fbab7e9cb2f75819294",
+      "name": "WEB Tier 01",
+      "service_id": 120
+    },
+    {
+      "trash_id": "58790d4e2fdcd9733aa7ae68ba2bb503",
+      "name": "WEB Tier 02",
+      "service_id": 121
+    },
+    {
+      "trash_id": "d84935abd3f8556dcd51d4f27e22d0a6",
+      "name": "WEB Tier 03",
+      "service_id": 122
+    },
+    {
+      "trash_id": "8a9fcdbb445f2add0505926df3bb7b8a",
+      "name": "German",
+      "service_id": 123
+    },
+    {
+      "trash_id": "c5dd0fd675f85487ad5bdf97159180bd",
+      "name": "German DL (undefined)",
+      "service_id": 124
+    },
+    {
+      "trash_id": "69aa1e159f97d860440b04cd6d590c4f",
+      "name": "Language: Not English",
+      "service_id": 125
+    },
+    {
+      "trash_id": "ae575f95ab639ba5d15f663bf019e3e8",
+      "name": "Language: Not Original",
+      "service_id": 126
+    },
+    {
+      "trash_id": "51ba9721e1d951e9ffccb3d939831941",
+      "name": "Not German, Japanese or English",
+      "service_id": 127
+    },
+    {
+      "trash_id": "1d1481d01b60a0274d81685b3ccbf7d0",
+      "name": "Not German, Japanese, Korean, Chinese or English",
+      "service_id": 128
+    },
+    {
+      "trash_id": "1fb6283bd05ab5c6a728cb213e5d07d8",
+      "name": "Wrong Language",
+      "service_id": 129
+    },
+    {
+      "trash_id": "1bd69272e23c5e6c5b1d6c8a36fce95e",
+      "name": "HFR",
+      "service_id": 130
+    },
+    {
+      "trash_id": "5ab46ff851b76c337e13e81a4353875f",
+      "name": "INTERNAL",
+      "service_id": 131
+    },
+    {
+      "trash_id": "4aee45b0868229c4fbd8bad3e315f1d0",
+      "name": "MPEG2",
+      "service_id": 132
+    },
+    {
+      "trash_id": "7ba05c6e0e14e793538174c679126996",
+      "name": "MULTi",
+      "service_id": 133
+    },
+    {
+      "trash_id": "09654d13ce1f0453496546dfd875b2a5",
+      "name": "P2P Internal",
+      "service_id": 134
+    },
+    {
+      "trash_id": "7470a681e6205243983c4410ee4c920f",
+      "name": "VC-1",
+      "service_id": 135
+    },
+    {
+      "trash_id": "90501962793d580d011511155c97e4e5",
+      "name": "VP9",
+      "service_id": 136
+    },
+    {
+      "trash_id": "cddfb4e32db826151d97352b8e37c648",
+      "name": "x264",
+      "service_id": 137
+    },
+    {
+      "trash_id": "c9eafd50846d299b862ca9bb6ea91950",
+      "name": "x265",
+      "service_id": 138
+    },
+    {
+      "trash_id": "041d90b435ebd773271cea047a457a6a",
+      "name": "x266",
+      "service_id": 139
+    },
+    {
+      "trash_id": "3bc5f395426614e155e585a2f056cdf1",
+      "name": "Season Pack",
+      "service_id": 140
+    },
+    {
+      "trash_id": "ec8fa7296b64e8cd390a1600981f3923",
+      "name": "Repack/Proper",
+      "service_id": 141
+    },
+    {
+      "trash_id": "eb3d5cc0a2be0db205fb823640db6a3c",
+      "name": "Repack2",
+      "service_id": 142
+    },
+    {
+      "trash_id": "44e7c4de10ae50265753082e5dc76047",
+      "name": "Repack3",
+      "service_id": 143
+    },
+    {
+      "trash_id": "290078c8b266272a5cc8e251b5e2eb0b",
+      "name": "1080p",
+      "service_id": 144
+    },
+    {
+      "trash_id": "1bef6c151fa35093015b0bfef18279e5",
+      "name": "2160p",
+      "service_id": 145
+    },
+    {
+      "trash_id": "c99279ee27a154c2f20d1d505cc99e25",
+      "name": "720p",
+      "service_id": 146
+    },
+    {
+      "trash_id": "3a4127d8aa781b44120d907f2cd62627",
+      "name": "Hybrid",
+      "service_id": 147
+    },
+    {
+      "trash_id": "b735f09d3c025cbb7d75a5d38325b73b",
+      "name": "Remaster",
+      "service_id": 148
+    },
+    {
+      "trash_id": "a370d974bc7b80374de1d9ba7519760b",
+      "name": "ABEMA",
+      "service_id": 149
+    },
+    {
+      "trash_id": "d54cd2bf1326287275b56bccedb72ee2",
+      "name": "ADN",
+      "service_id": 150
+    },
+    {
+      "trash_id": "7dd31f3dee6d2ef8eeaa156e23c3857e",
+      "name": "B-Global",
+      "service_id": 151
+    },
+    {
+      "trash_id": "4c67ff059210182b59cdd41697b8cb08",
+      "name": "Bilibili",
+      "service_id": 152
+    },
+    {
+      "trash_id": "3e0b26604165f463f3e8e192261e7284",
+      "name": "CR",
+      "service_id": 153
+    },
+    {
+      "trash_id": "1284d18e693de8efe0fe7d6b3e0b9170",
+      "name": "FUNi",
+      "service_id": 154
+    },
+    {
+      "trash_id": "570b03b3145a25011bf073274a407259",
+      "name": "HIDIVE",
+      "service_id": 155
+    },
+    {
+      "trash_id": "44a8ee6403071dd7b8a3a8dd3fe8cb20",
+      "name": "VRV",
+      "service_id": 156
+    },
+    {
+      "trash_id": "e5e6405d439dcd1af90962538acd4fe0",
+      "name": "WKN",
+      "service_id": 157
+    },
+    {
+      "trash_id": "d17ea3d84c15299474b76fe85aa02a26",
+      "name": "CPNG",
+      "service_id": 158
+    },
+    {
+      "trash_id": "940e98773ac068f2088688f95a88ea66",
+      "name": "DMM-TV",
+      "service_id": 159
+    },
+    {
+      "trash_id": "7be9c0572d8cd4f81785dacf7e85985e",
+      "name": "FOD",
+      "service_id": 160
+    },
+    {
+      "trash_id": "4404ad44d87ccbb82746e180713112fb",
+      "name": "HTSR",
+      "service_id": 161
+    },
+    {
+      "trash_id": "b61e27491a46c1e23bfb2f2497870495",
+      "name": "Hami",
+      "service_id": 162
+    },
+    {
+      "trash_id": "8620e171f1a67cff092e86e65bb29c76",
+      "name": "KCW",
+      "service_id": 163
+    },
+    {
+      "trash_id": "dc44a5d07db7938a84e4401a7b5059bc",
+      "name": "KKTV",
+      "service_id": 164
+    },
+    {
+      "trash_id": "f3e4d3733b4dce640081977b8c500f19",
+      "name": "LINETV",
+      "service_id": 165
+    },
+    {
+      "trash_id": "6e14bcd243960ebe991e475ab86fd44e",
+      "name": "MyTVSuper",
+      "service_id": 166
+    },
+    {
+      "trash_id": "86f8d3b8761de651aa355d46d5d8db3e",
+      "name": "TVING",
+      "service_id": 167
+    },
+    {
+      "trash_id": "d100ea972d1af2150b65b1cffb80f6b5",
+      "name": "TVer",
+      "service_id": 168
+    },
+    {
+      "trash_id": "0e99e7cc719a8a73b2668c3a0c3fe10c",
+      "name": "U-NEXT",
+      "service_id": 169
+    },
+    {
+      "trash_id": "93c9d1e566dca8b34d57f5efbbf85f28",
+      "name": "VIU",
+      "service_id": 170
+    },
+    {
+      "trash_id": "932d0a3499cc4c529fb86e3adf1326d9",
+      "name": "Viki",
+      "service_id": 171
+    },
+    {
+      "trash_id": "50421fc8b3734d2863561714d343e449",
+      "name": "WAVVE",
+      "service_id": 172
+    },
+    {
+      "trash_id": "932fafe503110be779ae49342dfad30b",
+      "name": "WETV",
+      "service_id": 173
+    },
+    {
+      "trash_id": "e9e79cb37b02f8296976f3ed3128c8cf",
+      "name": "YOUKU",
+      "service_id": 174
+    },
+    {
+      "trash_id": "e261d9c9c2d177c9664f24f81da8135a",
+      "name": "friDay",
+      "service_id": 175
+    },
+    {
+      "trash_id": "6123bfd18480b3b0d038caaa38cfa35f",
+      "name": "iQIY",
+      "service_id": 176
+    },
+    {
+      "trash_id": "b2b980877494b560443631eb1f473867",
+      "name": "NLZ",
+      "service_id": 177
+    },
+    {
+      "trash_id": "5d2317d99af813b6529c7ebf01c83533",
+      "name": "VDL",
+      "service_id": 178
+    },
+    {
+      "trash_id": "b0d6195c23ae254932da00512db7e8a8",
+      "name": "AUViO",
+      "service_id": 179
+    },
+    {
+      "trash_id": "f27d46a831e6b16fa3fee2c4e5d10984",
+      "name": "MyCANAL",
+      "service_id": 180
+    },
+    {
+      "trash_id": "0455d6519a550dbf648c97b56e7231d2",
+      "name": "SALTO",
+      "service_id": 181
+    },
+    {
+      "trash_id": "d660701077794679fd59e8bdf4ce3a29",
+      "name": "AMZN",
+      "service_id": 182
+    },
+    {
+      "trash_id": "d9e511921c8cedc7282e291b0209cdc5",
+      "name": "ATV",
+      "service_id": 183
+    },
+    {
+      "trash_id": "f67c9ca88f463a48346062e8ad07713f",
+      "name": "ATVP",
+      "service_id": 184
+    },
+    {
+      "trash_id": "77a7b25585c18af08f60b1547bb9b4fb",
+      "name": "CC",
+      "service_id": 185
+    },
+    {
+      "trash_id": "36b72f59f4ea20aad9316f475f2d9fbb",
+      "name": "DCU",
+      "service_id": 186
+    },
+    {
+      "trash_id": "89358767a60cc28783cdc3d0be9388a4",
+      "name": "DSNP",
+      "service_id": 187
+    },
+    {
+      "trash_id": "7a235133c87f7da4c8cccceca7e3c7a6",
+      "name": "HBO",
+      "service_id": 188
+    },
+    {
+      "trash_id": "a880d6abc21e7c16884f3ae393f84179",
+      "name": "HMAX",
+      "service_id": 189
+    },
+    {
+      "trash_id": "f6cce30f1733d5c8194222a7507909bb",
+      "name": "HULU",
+      "service_id": 190
+    },
+    {
+      "trash_id": "81d1fbf600e2540cee87f3a23f9d3c1c",
+      "name": "MAX",
+      "service_id": 191
+    },
+    {
+      "trash_id": "d34870697c9db575f17700212167be23",
+      "name": "NF",
+      "service_id": 192
+    },
+    {
+      "trash_id": "1656adc6d7bb2c8cca6acfb6592db421",
+      "name": "PCOK",
+      "service_id": 193
+    },
+    {
+      "trash_id": "6eb71887a8db6e783dd398446eb0e65d",
+      "name": "PLAY",
+      "service_id": 194
+    },
+    {
+      "trash_id": "c67a75ae4a1715f2bb4d492755ba4195",
+      "name": "PMTP",
+      "service_id": 195
+    },
+    {
+      "trash_id": "da393fd4e2c0cce7c9dc2669c43e0593",
+      "name": "ROKU",
+      "service_id": 196
+    },
+    {
+      "trash_id": "ae58039e1319178e6be73caab5c42166",
+      "name": "SHO",
+      "service_id": 197
+    },
+    {
+      "trash_id": "1efe8da11bfd74fbbcd4d8117ddb9213",
+      "name": "STAN",
+      "service_id": 198
+    },
+    {
+      "trash_id": "9623c5c9cac8e939c1b9aedd32f640bf",
+      "name": "SYFY",
+      "service_id": 199
+    },
+    {
+      "trash_id": "0ac24a2a68a9700bcb7eeca8e5cd644c",
+      "name": "iT",
+      "service_id": 200
+    },
+    {
+      "trash_id": "e6e299075e22ac8f541f722254c8350a",
+      "name": "AUBC",
+      "service_id": 201
+    },
+    {
+      "trash_id": "defb0b4c8b3f6a15927c0f14c6e69c94",
+      "name": "CBC",
+      "service_id": 202
+    },
+    {
+      "trash_id": "4e9a630db98d5391aec1368a0256e2fe",
+      "name": "CRAV",
+      "service_id": 203
+    },
+    {
+      "trash_id": "dc5f2bb0e0262155b5fedd0f6c5d2b55",
+      "name": "DSCP",
+      "service_id": 204
+    },
+    {
+      "trash_id": "fb1a91cdc0f26f7ca0696e0e95274645",
+      "name": "OViD",
+      "service_id": 205
+    },
+    {
+      "trash_id": "3ac5d84fce98bab1b531393e9c82f467",
+      "name": "QIBI",
+      "service_id": 206
+    },
+    {
+      "trash_id": "c30d2958827d1867c73318a5a2957eb1",
+      "name": "RED",
+      "service_id": 207
+    },
+    {
+      "trash_id": "fe4062eac43d4ea75955f8ae48adcf1e",
+      "name": "STRP",
+      "service_id": 208
+    },
+    {
+      "trash_id": "218e93e5702f44a68ad9e3c6ba87d2f0",
+      "name": "HD Streaming Boost",
+      "service_id": 209
+    },
+    {
+      "trash_id": "bbcaf03147de0f73be2be4a9078dfa03",
+      "name": "4OD",
+      "service_id": 210
+    },
+    {
+      "trash_id": "fcc09418f67ccaddcf3b641a22c5cfd7",
+      "name": "ALL4",
+      "service_id": 211
+    },
+    {
+      "trash_id": "dc503e2425126fa1d0a9ad6168c83b3f",
+      "name": "IP",
+      "service_id": 212
+    },
+    {
+      "trash_id": "fa5a16b951004c23e980d2913694a137",
+      "name": "ITVX",
+      "service_id": 213
+    },
+    {
+      "trash_id": "9f72dc1059a6b277c21cee6a1f15f13f",
+      "name": "MY5",
+      "service_id": 214
+    },
+    {
+      "trash_id": "b66a699fba6f9df91becab798d7502e5",
+      "name": "NOW",
+      "service_id": 215
+    },
+    {
+      "trash_id": "15a05bc7c1a36e2b57fd628f8977e2fc",
+      "name": "AV1",
+      "service_id": 216
+    },
+    {
+      "trash_id": "85c61753df5da1fb2aab6f2a47426b09",
+      "name": "BR-DISK",
+      "service_id": 217
+    },
+    {
+      "trash_id": "32b367365729d530ca1c124a0b180c64",
+      "name": "Bad Dual Groups",
+      "service_id": 218
+    },
+    {
+      "trash_id": "fbcb31d8dabd2a319072b84fc0b7249c",
+      "name": "Extras",
+      "service_id": 219
+    },
+    {
+      "trash_id": "9c11cd3f07101cdba90a2d81cf0e56b4",
+      "name": "LQ",
+      "service_id": 220
+    },
+    {
+      "trash_id": "e2315f990da2e2cbfc9fa5b7a6fcfe48",
+      "name": "LQ (Release Title)",
+      "service_id": 221
+    },
+    {
+      "trash_id": "82d40da2bc6923f41e14394075dd4b03",
+      "name": "No-RlsGroup",
+      "service_id": 222
+    },
+    {
+      "trash_id": "06d66ab109d4d2eddb2794d21526d140",
+      "name": "Retags",
+      "service_id": 223
+    },
+    {
+      "trash_id": "1b3994c551cbb92a2c781af061f4ab44",
+      "name": "Scene",
+      "service_id": 224
+    },
+    {
+      "trash_id": "23297a736ca77c0fc8e70f8edd7ee56c",
+      "name": "Upscaled",
+      "service_id": 225
+    }
+  ]
+}

@@ -1,0 +1,89 @@
+#
+#
+#
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tdarr
+  namespace: streaming
+  labels:
+    app: tdarr
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tdarr
+  template:
+    metadata:
+      labels:
+        app: tdarr
+    spec:
+      securityContext:
+        # runAsUser: 1000
+        # runAsGroup: 1002
+        fsGroup: 1002
+      containers:
+      - name: tdarr
+        image: haveagitgat/tdarr:2.69.01
+        securityContext: 
+          # runAsUser: 1000
+          runAsGroup: 1002
+          # allowPrivilegeEscalation: false  # Add this
+        ports:
+        - containerPort: 8265
+          name: webui
+        - containerPort: 8266
+          name: server
+        env:
+        - name: PUID
+          value: "1000"
+        - name: PGID
+          value: "1002"
+        - name: UMASK_SET
+          value: "002"
+        - name: serverIP
+          value: "0.0.0.0"
+        - name: serverPort
+          value: "8266"
+        - name: webUIPort
+          value: "8265"
+        - name: NODE_OPTIONS
+          value: "--max-old-space-size=4096"
+        volumeMounts:
+        - name: config
+          mountPath: /app/config
+        - name: temp-transcodes
+          mountPath: /temp
+        # nfs pvc
+        - name: nas-media
+          mountPath: /mnt/data/media/
+      volumes:
+      - name: config
+        persistentVolumeClaim:
+          claimName: tdarr-pvc
+      - name: nas-media
+        persistentVolumeClaim:
+          claimName: nas-media-pvc
+      - name: temp-transcodes
+        emptyDir: {}
+
+---
+# service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: tdarr
+  namespace: streaming
+spec:
+  type: LoadBalancer
+  selector:
+    app: tdarr
+  ports:
+  - name: webui
+    port: 80
+    targetPort: 8265
+    protocol: TCP
+  - name: server
+    port: 8266
+    targetPort: 8266
+    protocol: TCP

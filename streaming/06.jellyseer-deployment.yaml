@@ -1,0 +1,74 @@
+#
+# Jellyseer Deployment
+#
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jellyseerr
+  namespace: streaming
+  labels:
+    app: jellyseerr
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jellyseerr
+  template:
+    metadata:
+      labels:
+        app: jellyseerr
+    spec:
+      containers:
+      - name: jellyseerr
+        image: fallenbagel/jellyseerr:latest
+        ports:
+        - containerPort: 5055
+        env:
+        - name: PUID
+          value: "1000"
+        - name: PGID
+          value: "1000"
+        - name: TZ
+          value: "America/New_York"
+        volumeMounts:
+        - name: config
+          mountPath: /app/config
+      volumes:
+      - name: config
+        persistentVolumeClaim:
+          claimName: jellyseerr-config-pvc
+
+---
+#
+# Jellyseer Node Port
+#
+apiVersion: v1
+kind: Service
+metadata:
+ name: jellyseerr-node
+ namespace: streaming
+spec:
+  type: NodePort
+  selector:
+    app: jellyseerr
+  ports:
+  - port: 5055
+    targetPort: 5055
+    nodePort: 31739
+
+---
+#
+# Jellyseer LoadBalancer
+#
+apiVersion: v1
+kind: Service
+metadata:
+  name: jellyseerr
+  namespace: streaming
+spec:
+  type: ClusterIP
+  selector:
+    app: jellyseerr
+  ports:
+  - port: 80
+    targetPort: 5055

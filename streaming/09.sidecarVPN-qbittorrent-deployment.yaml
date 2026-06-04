@@ -1,0 +1,137 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: qbittorrent-surfshark
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: qbittorrent-surfshark
+  template:
+    metadata:
+      labels:
+        app: qbittorrent-surfshark
+    spec:
+      hostNetwork: false
+      shareProcessNamespace: true
+      containers:
+      # Gluetun VPN with SurfShark
+      - name: gluetun
+        image: qmcgaw/gluetun
+        env:
+        # SurfShark specific configuration
+        - name: VPN_SERVICE_PROVIDER
+          value: "surfshark"
+        - name: VPN_TYPE
+          value: "wireguard"
+        
+        # SurfShark credentials
+        - name: WIREGUARD_PRIVATE_KEY
+          valueFrom:
+            secretKeyRef:
+              name: surfshark-wireguard
+              key: private-key
+        - name: WIREGUARD_ADDRESS
+          valueFrom:
+            secretKeyRef:
+              name: surfshark-wireguard
+              key: address
+        
+        # Server selection
+        - name: SERVER_COUNTRIES
+          value: "United States"  # Choose your preferred country
+        - name: SERVER_CITIES
+          value: "Los Angeles"    # Optional: specific city
+        - name: SERVER_HOSTNAMES
+          value: "us-lax.prod.surfshark.com"               # Optional: specific server hostname
+        
+        # Security and kill switch
+        - name: FIREWALL
+          value: "on"
+        - name: FIREWALL_VPN_INPUT_PORTS
+          value: "8080,6881"
+        - name: FIREWALL_DEBUG
+          value: "on"
+        
+        # DNS configuration
+        - name: DNS_PLAINTEXT_ADDRESS
+          value: "1.1.1.1"  # Cloudflare DNS
+        - name: DOT
+          value: "on"  # DNS over TLS
+        
+        # Timezone and health checks
+        - name: TZ
+          value: "Europe/London"
+        
+        # Ports to expose for internal access
+        ports:
+        - containerPort: 8080
+          name: webui
+        - containerPort: 6881
+          name: bittorrent
+        - containerPort: 6881
+          protocol: UDP
+          name: bittorrent-udp
+        
+        securityContext:
+          capabilities:
+            add:
+            - NET_ADMIN
+        volumeMounts:
+        - name: gluetun-data
+          mountPath: /gluetun
+        
+      # qBittorrent container
+      - name: qbittorrent
+        image: lscr.io/linuxserver/qbittorrent:latest
+        env:
+        - name: PUID
+          value: "1000"
+        - name: PGID
+          value: "1000"
+        - name: TZ
+          value: "Europe/London"
+        - name: WEBUI_PORT
+          value: "8080"
+
+        volumeMounts:
+        - name: qbittorrent-config
+          mountPath: /config
+        - name: downloads
+          mountPath: /downloads
+
+      volumes:
+      - name: qbittorrent-config
+        hostPath:
+          path: /mnt/data/appdata/qbittorrent
+          type: DirectoryOrCreate
+      - name: downloads
+        hostPath:
+          path: /mnt/data/downloads
+          type: DirectoryOrCreate
+      - name: gluetun-data
+        emptyDir: {}
+
+---
+# Service for internal cluster access
+apiVersion: v1
+kind: Service
+metadata:
+  name: qbittorrent-service
+spec:
+  selector:
+    app: qbittorrent-surfshark
+  ports:
+  - name: webui
+    port: 8080
+    targetPort: 8080
+    protocol: TCP
+  - name: torrent-tcp
+    port: 6881
+    targetPort: 6881
+    protocol: TCP
+  - name: torrent-udp
+    port: 6881
+    targetPort: 6881
+    protocol: UDP
+  type: ClusterIP

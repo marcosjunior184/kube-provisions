@@ -1,0 +1,232 @@
+# #
+# # configMap job for the rules
+# #
+# apiVersion: v1
+# kind: ConfigMap
+# metadata:
+#   name: recyclarr-config
+#   namespace: streaming
+# data:
+#   recyclarr.yml: |
+#     # recyclarr.yml
+#     # 4K Dolby Vision + HDR10+ setup for Sonarr & Radarr
+
+#     sonarr:
+#       series:
+#         base_url: "http://sonarr.home.net/"
+#         api_key: ""
+#         delete_old_custom_formats: false
+
+#         quality_definition:
+#           type: series
+
+#         quality_profiles:
+#           - name: HD-1080p
+#             reset_unmatched_scores: 
+#               enabled: true
+#           - name: UHD-2160p
+#             reset_unmatched_scores:
+#               enabled: true
+
+#         custom_formats:
+#           - trash_ids:
+#               # Dolby Vision
+#               - 0f12c086e289cf966fa5948eac571f44
+#               # HDR10+
+#               - 2f22d89048b1d9cfd1a5d5f8b3f5a4b9
+#               # HDR10
+#               - 3e2c0c3e5f1b4a3f8b2c1d9e8a7f6b5c
+#               # Generic HDR
+#               - 9b27abf23a8f4e2b8c1d7f8a5e6d4c3b
+
+#     radarr:
+#       movies:
+#         base_url: "http://radarr.home.net/"
+#         api_key: ""
+#         delete_old_custom_formats: false
+
+#         quality_definition:
+#           type: movie
+
+#         quality_profiles:
+#           - name: HD-1080p
+#             reset_unmatched_scores:
+#               enabled: true
+#           - name: UHD-2160p
+#             reset_unmatched_scores:
+#               enabled: true
+
+#         custom_formats:
+#           - trash_ids:
+#               # Dolby Vision
+#               - 0f12c086e289cf966fa5948eac571f44
+#               # HDR10+
+#               - 2f22d89048b1d9cfd1a5d5f8b3f5a4b9
+#               # HDR10
+#               - 3e2c0c3e5f1b4a3f8b2c1d9e8a7f6b5c
+#               # Generic HDR
+#               - 9b27abf23a8f4e2b8c1d7f8a5e6d4c3b
+
+#     # # Global settings
+#     # sonarr:
+#     #   base_url: "https://sonarr.home.net/"
+#     #   api_key: ""
+#     #   delete_old_custom_formats: false 
+#     #   quality_definition:
+#     #     type: "series"
+#     #   include:
+#     #     - template: "sonarr-v4-quality-profile-web-1080p"
+#     #     - template: "sonarr-v4-custom-formats-web-1080p"
+#     #   custom_formats:
+#     #     - trash_ids:
+#     #         - "923b6abef9b17f937fab56cfcf89e1f1"  # DV (WEBDL) - Dolby Vision
+#     #         - "b17886cb4158d9fea189859409975758"  # HDR10Plus Boost
+#     #       assign_scores_to:
+#     #         - name: "UHD Bluray + WEB"  # Fixed spelling
+
+#     # radarr:
+#     #   instances:
+#     #     - name: "movies-hd"
+#     #       base_url: "https://radarr.home.net/"
+#     #       api_key: ""
+#     #       delete_old_custom_formats: false  # Moved here
+#     #       quality_definition:
+#     #         type: "movie"
+#     #       include:
+#     #         - template: "radarr-quality-profile-hd-bluray-web"
+#     #         - template: "radarr-custom-formats-hd-bluray-web"
+#     #       custom_formats:
+#     #         - trash_ids:
+#     #             - "923b6abef9b17f937fab56cfcf89e1f1"  # DV (WEBDL) - Dolby Vision
+#     #             - "b17886cb4158d9fea189859409975758"  # HDR10Plus Boost
+#     #           assign_scores_to:
+#     #             - name: "UHD Bluray + WEB"  # Fixed spelling
+# ---
+# #
+# # Cronjob
+# #
+# apiVersion: batch/v1
+# kind: CronJob
+# metadata:
+#   name: recyclarr-sync
+#   namespace: streaming
+# spec:
+#   schedule: "0 3 * * *"  # Runs daily at 3:00 AM
+#   timeZone: "America/Regina"
+#   jobTemplate:
+#     spec:
+#       template:
+#         spec:
+#           restartPolicy: OnFailure
+#           containers:
+#           - name: recyclarr
+#             image: ghcr.io/recyclarr/recyclarr:8
+#             volumeMounts:
+#             - name: recyclarr-config
+#               mountPath: /config  # Recyclarr looks here for recyclarr.yml by default
+#           volumes:
+#           - name: recyclarr-config
+#             configMap:
+#               name: recyclarr-config
+# ---
+# #
+# #
+# #
+# apiVersion: batch/v1
+# kind: Job
+# metadata:
+#   name: recyclarr-sync-now
+#   namespace: streaming
+# spec:
+#   template:
+#     spec:
+#       restartPolicy: Never
+#       containers:
+#       - name: recyclarr
+#         image: ghcr.io/recyclarr/recyclarr:8
+#         command: ["recyclarr", "sync"]
+#         env:
+#         - name: TZ
+#           value: "America/Regina"
+#         volumeMounts:
+#         - name: recyclarr-config-file
+#           mountPath: /config/recyclarr.yml   # Mount only the config file
+#           subPath: recyclarr.yml
+#           readOnly: true
+#         - name: recyclarr-state
+#           mountPath: /config   
+#       volumes:
+#       - name: recyclarr-config-file
+#         configMap:
+#           name: recyclarr-config
+#       - name: recyclarr-state
+#         emptyDir: {}   
+# ---
+#
+# Sonarr deployment
+#
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: recyclarr
+  namespace: streaming
+  labels:
+    app: recyclarr
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: recyclarr
+  template:
+    metadata:
+      labels:
+        app: recyclarr
+    spec:
+      dnsPolicy: "None"
+      dnsConfig:
+        nameservers:
+          - ${NAME_SERVER_IP}
+        searches:
+        - default.svc.cluster.local
+        - svc.cluster.local
+        - cluster.local
+      containers:
+      - name: sonarr
+        image: ghcr.io/recyclarr/recyclarr:latest
+        ports:
+        - containerPort: 8081
+        env:
+        - name: RECYCLARR_CONFIG_DIR
+          value: "/mnt/recyclarr/config"
+        - name: RECYCLARR_DATA_DIR
+          value: "/mnt/recyclarr/data"
+        - name: TZ
+          value: "America/New_York"
+        volumeMounts:
+        - name: recyclarr-config
+          mountPath: /mnt/recyclarr
+      volumes:
+      - name: recyclarr-config
+        hostPath:
+          path: /home/dasilvam/projects/kube-provisions/streaming/recyclarr
+          type: Directory
+---
+#
+# Sonarr Node Port
+#
+apiVersion: v1
+kind: Service
+metadata:
+  name: recyclarr-node
+  namespace: streaming
+spec:
+  type: NodePort
+  selector:
+    app: recyclarr
+  ports:
+  - port: 8081
+    targetPort: 8081
+
+
+
+# kubectl run recyclarr-list   --image=ghcr.io/recyclarr/recyclarr:8   --restart=Never   --rm -it   --command -- recyclarr list custom-formats sonarr

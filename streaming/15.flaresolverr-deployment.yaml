@@ -1,0 +1,60 @@
+#
+# Flaresolverr Deployment
+#
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flaresolverr
+  namespace: streaming
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: flaresolverr
+  template:
+    metadata:
+      labels:
+        app: flaresolverr
+    spec:
+      containers:
+      - name: flaresolverr
+        image: ghcr.io/flaresolverr/flaresolverr:latest
+        ports:
+        - containerPort: 8191
+        env:
+        - name: LOG_LEVEL
+          value: "info"
+        - name: LOG_HTML
+          value: "false"
+---
+#
+# Flaresolverr Node Port
+#
+apiVersion: v1
+kind: Service
+metadata:
+  name: flaresolverr-node
+  namespace: streaming
+spec:
+  type: NodePort
+  selector:
+    app: flaresolverr
+  ports:
+  - port: 8191
+    targetPort: 8191
+---
+#
+# Flaresolverr LoadBalancer
+#
+apiVersion: v1
+kind: Service
+metadata:
+  name: flaresolverr
+  namespace: streaming
+spec:
+  type: LoadBalancer
+  selector:
+    app: flaresolverr
+  ports:
+  - port: 80
+    targetPort: 8191

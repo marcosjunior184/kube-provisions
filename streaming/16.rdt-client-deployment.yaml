@@ -1,0 +1,100 @@
+#
+# Real Debrid Client Deployment
+#
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rdt-client
+  namespace: streaming
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rdt-client
+  template:
+    metadata:
+      labels:
+        app: rdt-client
+    spec:
+      #securityContext:
+      # runAsUser: 1000
+      #  runAsGroup: 1002
+      containers:
+      - name: rdt-client
+        image: rogerfar/rdtclient:latest
+          # securityContext:
+          #runAsUser: 1000
+          #runAsGroup: 1002
+        ports:
+        - containerPort: 6500
+        env:
+        - name: PUID
+          value: "1000"
+        - name: PGID
+          value: "1000"
+        - name: TZ
+          value: "America/New_York"
+        volumeMounts:
+        - name: config
+          mountPath: /data/db
+        # SSD PVC
+        - name: media 
+          mountPath: /data/media/downloads
+          subPath: downloads
+        - name: media
+          mountPath: /data/media/handoff
+          subPath: handoff
+        - name: media
+          mountPath: /data/media/
+        # NAS PVC
+        - name: nas-media
+          mountPath: /mnt/data/media
+        - name: nas-media
+          mountPath: /mnt/data/media/downloads
+          subPath: downloads
+        - name: nas-media
+          mountPath: /mnt/data/media/handoff
+          subPath: handoff
+      volumes:
+      - name: config
+        persistentVolumeClaim:
+          claimName: rdt-client-config-pvc
+      - name: media
+        persistentVolumeClaim:
+          claimName: media-pvc
+      - name: nas-media
+        persistentVolumeClaim:
+          claimName: nas-media-pvc
+---
+#
+# Real Debrid Client Node Port
+#
+apiVersion: v1
+kind: Service
+metadata:
+  name: rdt-client-service-node
+  namespace: streaming
+spec:
+  type: NodePort
+  selector:
+    app: rdt-client
+  ports:
+  - port: 6500
+    targetPort: 6500
+    nodePort: 31678
+---
+#
+# Real Debrid Client 
+#
+apiVersion: v1
+kind: Service
+metadata:
+  name: rdt-client-service
+  namespace: streaming
+spec:
+  type: LoadBalancer
+  selector:
+    app: rdt-client
+  ports:
+  - port: 80
+    targetPort: 6500
