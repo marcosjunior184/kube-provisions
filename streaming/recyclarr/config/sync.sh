@@ -115,9 +115,9 @@ done
 mv "$CF_DIR/radarr_new_cf.yml" "$CF_DIR/radarr_all_cf.yml"
 mv "$CF_DIR/sonarr_new_cf.yml" "$CF_DIR/sonarr_all_cf.yml"
 
-# echo "Done."
+echo "Done."
 
-# echo "Running 'recyclarr sync'..."
+echo "Running 'recyclarr sync'..."
 
-# CMD="$LOCATION sync"
-# eval "$CMD"
+CMD="$LOCATION sync"
+eval "$CMD"
