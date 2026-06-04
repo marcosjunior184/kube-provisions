@@ -1,0 +1,9 @@
+.env
+*.crt
+*.key
+san.conf
+ca.srl
+secrets.yaml
+# For recyclarr logs
+*debug.log
+*verbose.log
