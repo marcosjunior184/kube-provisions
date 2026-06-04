@@ -1,0 +1,53 @@
+config:
+  clients:
+    - url: http://loki-gateway.monitoring.svc.cluster.local/loki/api/v1/push
+  positions:
+    filename: /run/promtail/positions.yaml
+  scrape_configs:
+    - job_name: kubernetes-pods
+      kubernetes_sd_configs:
+        - role: pod
+      relabel_configs:
+        # Your existing app label (keep this)
+        - source_labels: ["__meta_kubernetes_pod_label_app"]
+          action: replace
+          target_label: "app"
+        
+        # CRITICAL: Add these for useful querying
+        - source_labels: ["__meta_kubernetes_pod_namespace"]
+          action: replace
+          target_label: "namespace"
+        
+        - source_labels: ["__meta_kubernetes_pod_name"]
+          action: replace
+          target_label: "pod"
+        
+        - source_labels: ["__meta_kubernetes_pod_container_name"]
+          action: replace
+          target_label: "container"
+        
+        - source_labels: ["__meta_kubernetes_node_name"]
+          action: replace
+          target_label: "node"
+        
+        # Preserve the pod UID for uniqueness
+        - action: replace
+          source_labels: ["__meta_kubernetes_pod_uid"]
+          target_label: "pod_uid"
+        
+        # Add namespace as a prefix to pod name for uniqueness
+        - source_labels: ["__meta_kubernetes_pod_label_app", "__meta_kubernetes_pod_namespace"]
+          action: replace
+          separator: "/"
+          target_label: "job"
+        
+        # Include all pod labels as Promtail labels (optional but useful)
+        - action: labelmap
+          regex: "__meta_kubernetes_pod_label_(.+)"
+resources:
+  requests:
+    cpu: 25m
+    memory: 128Mi
+  limits:
+    cpu: 50m
+    memory: 256Mi

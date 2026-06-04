@@ -1,0 +1,28 @@
+adminPassword: "admin"
+persistence:
+  enabled: true
+  size: 5Gi
+resources:
+  requests:
+    cpu: 50m
+    memory: 128Mi
+  limits:
+    cpu: 100m
+    memory: 256Mi
+service:
+  type: LoadBalancer
+datasources:
+  datasources.yaml:
+    apiVersion: 1
+    datasources:
+      - name: Prometheus
+        uid: prom
+        type: prometheus
+        url: http://prometheus-server.monitoring.svc.cluster.local
+        access: proxy
+        isDefault: true
+      - name: Loki
+        uid: loki
+        type: loki
+        url: http://loki-gateway.monitoring.svc.cluster.local/
+        access: proxy
