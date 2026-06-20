@@ -26,6 +26,8 @@ spec:
         - default.svc.cluster.local
         - svc.cluster.local
         - cluster.local
+      securityContext:
+        fsGroup: 1000
       containers:
       - name: prowlarr
         image: linuxserver/prowlarr:latest
@@ -39,9 +41,22 @@ spec:
         - name: TZ
           value: "America/New_York"
         volumeMounts:
+        - name: torbox-custom-indexer
+          mountPath: /config/Definitions/Custom
+        - name: torrentio-custom-indexer
+          mountPath: /config/Definitions/Custom/torrentio.yml
+          subPath: torrentio.yml
         - name: config
           mountPath: /config
       volumes:
+      - name: torbox-custom-indexer
+        configMap:
+          name: torbox-custom
+          defaultMode: 0644
+      - name: torrentio-custom-indexer
+        configMap:
+          name: torrentio-custom
+          defaultMode: 0644
       - name: config
         persistentVolumeClaim:
           claimName: prowlarr-config-pvc

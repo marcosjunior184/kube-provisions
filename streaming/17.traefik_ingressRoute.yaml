@@ -93,6 +93,12 @@ spec:
         - name: tdarr
           port: 80
           namespace: streaming
+    - match: Host(`bazarr.home.net`)
+      kind: Rule
+      services:
+        - name: bazarr
+          port: 80
+          namespace: streaming
 ---
 #
 # Ingress routes
