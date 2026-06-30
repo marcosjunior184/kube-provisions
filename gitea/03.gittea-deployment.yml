@@ -1,0 +1,87 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gitea
+  namespace: gitea
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gitea
+  template:
+    metadata:
+      labels:
+        app: gitea
+    spec:
+      containers:
+      - name: gitea
+        image: gitea/gitea:latest
+        env:
+        - name: GITEA__database__DB_TYPE
+          value: ${GITEA_DATABASE_DB_TYPE}
+        - name: GITEA__database__HOST
+          value: ${GITEA_DATABASE_HOST}
+        - name: GITEA__database__NAME
+          value: ${GITEA_DATABASE_NAME}
+        - name: GITEA__database__USER
+          value: ${GITEA_DATABASE_USER}
+        - name: GITEA__database__PASSWD
+          value: ${GITEA_DATABASE_PASSWD}
+        - name: GITEA__server__DOMAIN
+          value: ${GITEA_SERVER_DOMAIN}
+        - name: GITEA__server__ROOT_URL
+          value: ${GITEA_SERVER_ROOT_URL}
+        - name: GITEA__server__HTTP_PORT
+          value: "3000"
+        - name: GITEA__server__SSH_DOMAIN
+          value: gitea.home.net
+        - name: GITEA__server__SSH_PORT
+          value: "22"
+        ports:
+        - name: http
+          containerPort: 3000
+        - name: ssh
+          containerPort: 22
+        volumeMounts:
+        - name: gitea-data
+          mountPath: /data
+      volumes:
+      - name: gitea-data
+        persistentVolumeClaim:
+          claimName: gitea-data-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gitea
+  namespace: gitea
+spec:
+  type: LoadBalancer
+  selector:
+    app: gitea
+  ports:
+  - name: http
+    port: 80
+    targetPort: 3000
+  - name: ssh
+    port: 22
+    targetPort: 22
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gitea-nodeport
+  namespace: gitea
+spec:
+  type: NodePort
+  selector:
+    app: gitea
+  ports:
+  - name: http
+    port: 3000
+    targetPort: 3000
+    nodePort: 30080
+  - name: ssh
+    port: 22
+    targetPort: 22
+    nodePort: 30022

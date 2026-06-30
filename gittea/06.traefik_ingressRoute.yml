@@ -1,0 +1,82 @@
+#
+# Middleware for redirecting 
+#
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: redirect-https
+  namespace: gitea
+spec:
+  redirectScheme:
+    scheme: https
+    permanent: true
+---
+#
+# Self signed skip verify
+#
+apiVersion: traefik.io/v1alpha1
+kind: ServersTransport
+metadata:
+  name: gitea-transport
+  namespace: gitea
+spec:
+  insecureSkipVerify: true
+---
+#
+# HTTP Ingress routes
+#
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: gitea-http-ingress-routes
+  namespace: gitea
+spec:
+  entryPoints:
+    - web
+  routes:
+    # GitTea
+    - match: Host(`gitea.home.net`)
+      kind: Rule
+      middlewares:
+        - name: redirect-https
+      services:
+      - name: gitea
+        port: 80
+        namespace: gitea
+    # Postgres
+    - match: Host(`postgres.home.net`)
+      kind: Rule
+      services:
+      - name: postgres
+        port: 80
+        namespace: gitea
+---
+#
+# HTTPS Ingress routes
+#
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: gitea-https-ingress-routes
+  namespace: gitea
+spec:
+  entryPoints:
+    - websecure
+  tls:
+    secretName: local-tls
+  routes:
+    - match: Host(`gitea.home.net`)
+      kind: Rule
+      services:
+      - name: gitea
+        port: 80
+        namespace: gitea
+        serversTransport: gitea-transport
+    # Postgres
+    - match: Host(`postgres.home.net`)
+      kind: Rule
+      services:
+      - name: postgres
+        port: 80
+        namespace: gitea
+        serversTransport: gitea-transport
