@@ -19,43 +19,36 @@ apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
   name: proxy-ingressroute
-  namespace: proxy
+  namespace: streaming
 spec:
   entryPoints:
     - web
     - websecure
   
   routes:
-    # CasaOs
-    - match: Host(`casaos.local`)
+    # Jellyseerr
+    - match: Host(`jellyseerr.local`)
       kind: Rule
       services:
-        - name: casaos-external-ip-service
+        - name: jellyseerr
           port: 80
-          namespace: proxy
+          namespace: streaming
     # Proxmox
-    - match: Host(`proxmox.local`)
-      kind: Rule
-      services:
-        - name: proxmox-external-ip-service
-          port: 8006
-            #scheme: https
-            #serversTransport: insecure-skip-verify
-          namespace: proxy
-    # Grafana
-    - match: Host(`grafana.local`)
-      kind: Rule
-      services:
-        - name: grafana
-          port: 80
-          namespace: monitoring
+    #    - match: Host(`proxmox.local`)
+    #  kind: Rule
+    #  services:
+    #    - name: proxmox-external-ip-service
+    #      port: 8006
+    #        #scheme: https
+    #        #serversTransport: insecure-skip-verify
+    #      namespace: proxy
     # Net
-    - match: Host(`net.local`)
-      kind: Rule
-      services:
-        - name: net-external-ip-service
-          port: 8080
-          namespace: proxy
+    #- match: Host(`net.local`)
+    #  kind: Rule
+    #  services:
+    #    - name: net-external-ip-service
+    #      port: 8080
+    #      namespace: proxy
 
-  tls:
-    secretName: local-tls
+            #tls:
+            #secretName: local-tls
