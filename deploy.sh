@@ -34,7 +34,6 @@ backup(){
 	backup_files=("./local.crt" "./local.key")
 
 	for file in "${backup_files[@]}"; do
-		# echo "${files}_test"
 
 		if [[ -f "$file" ]]; then
 			back_file_date=$(date +"%Y-%m-%d")
@@ -59,9 +58,9 @@ k3s_load_certs(){
 logger "=== Creating TLS ==="
 
 set_config
-backup
-
 mkdir -p "$CERTS_DIR"
+cd "$CERTS_DIR"
+backup
 
 logger $BLUE "STEP => Start Certs Creation"
 # Create CA private Key
