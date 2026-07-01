@@ -17,26 +17,45 @@ spec:
       - name: gitea
         image: gitea/gitea:latest
         env:
+        # DB type
         - name: GITEA__database__DB_TYPE
-          value: ${GITEA_DATABASE_DB_TYPE}
+          value: postgres
+        # DB host
         - name: GITEA__database__HOST
-          value: ${GITEA_DATABASE_HOST}
-        - name: GITEA__database__NAME
-          value: ${GITEA_DATABASE_NAME}
-        - name: GITEA__database__USER
-          value: ${GITEA_DATABASE_USER}
-        - name: GITEA__database__PASSWD
-          value: ${GITEA_DATABASE_PASSWD}
+          value: postgres.gitea.svc.cluster.local:80
+        # Domain
         - name: GITEA__server__DOMAIN
-          value: ${GITEA_SERVER_DOMAIN}
+          value: localhost
+        # Root URL
         - name: GITEA__server__ROOT_URL
-          value: ${GITEA_SERVER_ROOT_URL}
+          value: http://localhost:3000
+        # HTTP port
         - name: GITEA__server__HTTP_PORT
           value: "3000"
+        # SSH domain
         - name: GITEA__server__SSH_DOMAIN
           value: gitea.home.net
+        # SSH port
         - name: GITEA__server__SSH_PORT
           value: "22"
+        # DB name
+        - name: GITEA__database__NAME
+          valueFrom:
+            secretKeyRef:
+              name: gitea-secrets
+              key: gitea__database__name
+        # DB user
+        - name: GITEA__database__USER
+          valueFrom:
+            secretKeyRef:
+              name: gitea-secrets
+              key: gitea__database__user
+        # DB password
+        - name: GITEA__database__PASSWD
+          valueFrom:
+            secretKeyRef:
+              name: gitea-secrets
+              key: gitea__database__passwd
         ports:
         - name: http
           containerPort: 3000
@@ -85,3 +104,20 @@ spec:
     port: 22
     targetPort: 22
     nodePort: 30022
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gitea-clusterip
+  namespace: gitea
+spec:
+  type: ClusterIP
+  selector:
+    app: gitea
+  ports:
+  - name: http
+    port: 3000
+    targetPort: 3000
+  - name: ssh
+    port: 22
+    targetPort: 22
