@@ -3,7 +3,13 @@
 *.key
 san.conf
 ca.srl
-secrets.yaml
+secrets.*
 # For recyclarr logs
 *debug.log
 *verbose.log
+
+*-secret-plain.*
+*-secret.*
+!*-sealed.*
+*.pem
+*.key
