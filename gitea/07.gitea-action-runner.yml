@@ -1,0 +1,114 @@
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: runner-config
+  namespace: gitea
+data:
+  # Labels tell Gitea what images to use for matching workflow files
+  GITEA_RUNNER_LABELS: "ubuntu-latest:host,kaniko-runner:host,buildah-runner:host"
+  
+  # Inject rootless configuration into the runner process
+  config.yaml: |
+    runner:
+      file: .runner
+      capacity: 2
+      envs:
+        # Forces tools like buildah to know they are in an unprivileged container
+        STORAGE_DRIVER: vfs
+        BUILDAH_ISOLATION: chroot
+    container:
+      privileged: false
+      workdir: /workspace
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gitea-runner
+  namespace: gitea
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gitea-runner
+  template:
+    metadata:
+      labels:
+        app: gitea-runner
+    spec:
+      securityContext:
+        # Enforce non-root execution cluster-wide
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      containers:
+      - name: gitea-act-runner
+        image: gitea/act_runner:latest # Or a specific version like 0.2.11 [citation:5]
+        workingDir: /data
+        env:
+        - name: HOME
+          value: /data
+        # - name: DOCKER_HOST
+        #   value: unix:///var/run/user/1000/docker.sock 
+        - name: GITEA_INSTANCE_URL
+          value: http://gitea-clusterip.gitea.svc.cluster.local:3000
+        - name: GITEA_RUNNER_REGISTRATION_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: runner-secret
+              key: token
+        - name: GITEA_RUNNER_NAME
+          value: dind-rootless-runner
+        # - name: GITEA_RUNNER_LABELS
+        #   value: ubuntu-latest:docker://node:18-bullseye,ubuntu-22.04:docker://node:18-bullseye
+        - name: GITEA_RUNNER_LABELS
+          valueFrom:
+            configMapKeyRef:
+              name: runner-config
+              key: GITEA_RUNNER_LABELS
+        - name: GITEA_RUNNER_CONFIG
+          value: "/config/config.yaml"
+        volumeMounts:
+        - name: config-volume
+          mountPath: /config
+        - name: runner-cache
+          mountPath: /home/runner/.cache
+        - name: runner-tmp
+          mountPath: /tmp
+        - name: runner-workspace
+          mountPath: /workspace
+        # - name: secrets
+        #   mountPath: /secrets
+        #   readOnly: true
+        - name: runner-data
+          mountPath: /data
+        # # 2. Prevent socket write collisions by utilizing emptyDir for runtime states
+        # - name: runtime-dir
+        #   mountPath: /run/user/1000
+        # 3. Mount an active memory block for internal container storage namespaces
+        # - name: dind-storage
+        #   mountPath: /home/rootless/.local/share/docker
+      volumes:
+      # - name: secrets
+      #   secret:
+      #     secretName: runner-secret 
+      - name: runner-cache
+        persistentVolumeClaim:
+          claimName: gitea-runner-pvc
+      - name: runtime-dir
+        emptyDir: {}
+      # - name: dind-storage
+      #   emptyDir:
+      #     medium: Memory
+      - name: config-volume
+        configMap:
+          name: runner-config
+          items:
+            - key: config.yaml
+              path: config.yaml
+      - name: runner-tmp
+        emptyDir: {}
+      - name: runner-workspace
+        emptyDir: {}
+      - name: runner-data
+        emptyDir: {}
