@@ -25,7 +25,7 @@ spec:
       serviceAccountName: {{ .Values.ServiceAccount.name }}
       containers:
         - name: {{ .Values.provider.name }}
-          image: {{ .Values.provider.image }}
+          image: {{ .Values.provider.image.repository }}:{{ .Values.provider.image.tag }}
           volumeMounts:
             - name: nfs-client-root
               mountPath: /persistentvolumes
