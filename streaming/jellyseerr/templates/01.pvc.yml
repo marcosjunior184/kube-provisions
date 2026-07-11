@@ -1,0 +1,16 @@
+#
+# Jellyseer config
+#
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: streaming
+  name: jellyseerr-config-pvc
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi

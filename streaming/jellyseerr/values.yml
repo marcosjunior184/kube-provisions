@@ -1,0 +1,20 @@
+deployment:
+  name: jellyseerr
+  replicas: 1
+  image:
+    repository: fallenbagel/jellyseerr
+    tag: latest
+  container:
+    port: 5055
+  env:
+    PUID: 1000
+    PGID: 1000
+    TZ: "America/Regina"
+
+pvc:
+  targetPort: 5055
+  nodePort:
+    port: 5055
+    nodePort: 31739
+  LoadBalancer:
+    port: 80

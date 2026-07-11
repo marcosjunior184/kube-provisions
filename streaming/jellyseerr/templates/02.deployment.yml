@@ -1,0 +1,41 @@
+#
+# Jellyseer Deployment
+#
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: streaming
+  name: {{ .Values.deployment.name }} #jellyseerr
+  labels:
+    app: {{ .Values.deployment.name }} #jellyseerr
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+spec:
+  replicas: {{ .Values.deployment.replicas }} #1
+  selector:
+    matchLabels:
+      app: {{ .Values.deployment.name }} #jellyseerr
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.deployment.name }} #jellyseerr
+    spec:
+      containers:
+      - name: {{ .Values.deployment.name }} #jellyseerr
+        image: {{ .Values.deployment.image.repository }}:{{ .Values.deployment.image.tag }} # fallenbagel/jellyseerr:latest
+        ports:
+        - containerPort: {{ .Values.deployment.container.port }} # 5055
+        env:
+        - name: PUID
+          value: {{ .Values.deployment.env.PUID }} # "1000"
+        - name: PGID
+          value: {{ .Values.deployment.env.PGID }} # "1000"
+        - name: TZ
+          value: {{ .Values.deployment.env.TZ }} # "America/New_York"
+        volumeMounts:
+        - name: config
+          mountPath: /app/config
+      volumes:
+      - name: config
+        persistentVolumeClaim:
+          claimName: jellyseerr-config-pvc
