@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: infrastructure
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io   # Optional: Clean up resources when deleted
+spec:
+  project: default
+  
+  source:
+    repoURL: https://gitea.home.net/dasilvam/kube-provisions.git
+    targetRevision: main                        
+    path: ./infrastructure                      
+    
+  destination:
+    server: https://kubernetes.default.svc      # cluster API endpoint - Should be the main one if clustered
+    namespace: default                          # Doesn't matter much, chart creates its own namespaces
+  
+  syncPolicy:
+    automated:
+      prune: true                               # Delete resources not in Git
+      selfHeal: False                            # Revert manual changes
+    syncOptions:
+      - CreateNamespace=false                   # Infrastructure creates its own namespaces
+      - ApplyOutOfSyncOnly=true                 # Only sync resources that are out of sync
+      - PruneLast=true                          # Prune resources after sync (not before)
