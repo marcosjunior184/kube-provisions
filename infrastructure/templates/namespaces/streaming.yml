@@ -1,0 +1,8 @@
+---
+# Namespace for streaming.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: streaming
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"

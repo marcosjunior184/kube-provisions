@@ -1,0 +1,18 @@
+{{- if .Values.Role.create }}
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: nfs
+  name: {{ .Values.Role.name }}
+  labels:
+    {{- include "infrastructure.labels" . | nindent 4 }}
+    {{- toYaml .Values.clusterRole.labels | nindent 4 }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+rules:
+  - apiGroups: [""]
+    resources: ["endpoints"]
+    verbs: ["get", "list", "watch", "create", "update", "patch"]
+
+{{- end }}

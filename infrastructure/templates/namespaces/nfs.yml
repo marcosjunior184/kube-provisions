@@ -1,0 +1,8 @@
+---
+# Namespace for the NAS provisioner (nfs).
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: nfs
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"

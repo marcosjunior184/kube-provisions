@@ -1,0 +1,51 @@
+{{- if .Values.provider.create }}
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: nfs
+  name: {{ .Values.provider.name }}
+  labels:
+    {{- include "infrastructure.labels" . | nindent 4 }}
+    {{- toYaml .Values.clusterRole.labels | nindent 4 }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.provider.name }}
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.provider.name }}
+    spec:
+      serviceAccountName: {{ .Values.ServiceAccount.name }}
+      containers:
+        - name: {{ .Values.provider.name }}
+          image: {{ .Values.provider.image }}
+          volumeMounts:
+            - name: nfs-client-root
+              mountPath: /persistentvolumes
+          env:
+            - name: PROVISIONER_NAME
+              value: {{ .Values.provider.envs.provisionerName }}
+            - name: NFS_SERVER
+              value: {{ .Values.provider.envs.nfsServer }}
+            - name: NFS_PATH
+              value: {{ .Values.provider.envs.nfsPath }}
+            - name: CHOWN_ON_START
+              value: {{ .Values.provider.envs.chownOnStart }}
+            - name: CHOWN_USER
+              value: {{ .Values.provider.envs.chownUser }}
+            - name: CHOWN_GROUP
+              value: {{ .Values.provider.envs.chownGroup }}
+      volumes:
+        - name: nfs-client-root
+          nfs:
+            server: {{ .Values.provider.envs.nfsServer }}
+            path: {{ .Values.provider.envs.nfsPath }}
+
+{{- end }}

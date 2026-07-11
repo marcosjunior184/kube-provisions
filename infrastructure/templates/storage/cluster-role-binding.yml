@@ -1,0 +1,22 @@
+{{- if .Values.clusterRoleBinding.create }}
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  namespace: nfs
+  name: {{ .Values.ClusterRoleBinding.name}}
+  labels:
+    {{- include "infrastructure.labels" . | nindent 4 }}
+    {{- toYaml .Values.clusterRole.labels | nindent 4 }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+subjects:
+  - kind: ServiceAccount
+    name: {{ .Values.serviceAccount.name}}
+    namespace: nfs
+roleRef:
+  kind: ClusterRole
+  name: {{ .Values.clusterRole.name }}
+  apiGroup: rbac.authorization.k8s.io
+
+{{- end }}

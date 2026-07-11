@@ -1,0 +1,8 @@
+---
+# Namespace for the Nextcloud set up.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: cloud
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"

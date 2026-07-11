@@ -1,0 +1,52 @@
+# Service Account for NFS
+serviceAccount:
+  create: true
+  name: nfs-client-provisioner
+  labels:
+    environment: production
+  annotation: "Service account to be used on NAS access over NFS"
+
+# Cluster Role config
+clusterRole:
+  create: true
+  name: nfs-client-provisioner-runner
+  labels:
+    environment: production
+
+# Cluster Role Binding configuration. Binds serviceAccount <-to-> clusterRole
+clusterRoleBinding:
+  create: true
+  name: run-nfs-client-provisioner
+  labels:
+    environment: production
+
+# Role
+Role:
+  create: true
+  name: leader-locking-nfs-client-provisioner
+  labels:
+    environment: production
+
+# Role Binding
+RoleBinding:
+  create: true
+  name: leader-locking-nfs-client-provisioner-binding
+  labels:
+    environment: production
+
+# Provider
+provider:
+  create: true
+  name: nfs-client-provisioner
+  replicas: 1
+  image: 
+    repository: k8s.gcr.io/sig-storage/nfs-subdir-external-provisioner
+    tag: v4.0.2
+  envs:
+    provisionerName: k8s-sigs.io/nfs-subdir-external-provisioner
+    nfsServer: <server IP>
+    nfsPath: /media/nas_vault/app
+    chownOnStart: "true"
+    chownUser: "1000"
+    chownGroup: "1002"
+  
