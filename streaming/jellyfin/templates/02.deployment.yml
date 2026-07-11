@@ -1,0 +1,85 @@
+#
+# Jellyfin Deployment
+#
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: streaming
+  name: jellyfin
+  labels:
+    app: jellyfin
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+spec:
+  replicas: {{ .Values.deployment.replicas }} # 1
+  selector:
+    matchLabels:
+      app: jellyfin
+  template:
+    metadata:
+      labels:
+        app: jellyfin
+    spec:
+      securityContext:
+        runAsUser: {{ .values.deployment.security.runAsUser }} # 1000
+        runAsGroup: {{ .values.deployment.security.runAsGroup }} #1002
+        # For GPU passthrough.
+        supplementalGroups:
+          - {{ .values.deployment.security.supplementalGroups.Video }} #44  # Video
+          - {{ .values.deployment.security.supplementalGroups.Render }} #993 # Render
+      containers:
+      - name: jellyfin
+        image: {{ .values.deployment.image.repository }}:{{ .values.deployment.image.tag }} #jellyfin/jellyfin:latest
+        securityContext: 
+          runAsUser: {{ .values.deployment.container.runAsUser }} #1000
+          runAsGroup: {{ .values.deployment.container.runAsGroup }} #1002
+          privileged: {{ .values.deployment.container.priviledged }} #true
+        ports:
+        - containerPort: {{ .values.deployment.container.port }} #8096
+        env:
+        - name: LIBVA_DRIVER_NAME
+          value: iHD
+        - name: TZ
+          value: "America/New_York"
+        volumeMounts:
+        - name: gpu-device
+          mountPath: /dev/dri
+        - name: config
+          mountPath: /config
+        # SSD pvc
+        - name: media
+          mountPath: /data/media
+        - name: media
+          mountPath: /data/meadi/tv
+          subPath: tv
+        - name: media
+          mountPath: /data/meadia/movies
+          subPath: movies
+        - name: cache
+          mountPath: /cache
+        # nfs pvc
+        - name: nas-media
+          mountPath: /mnt/data/media/
+        - name: nas-media
+          mountPath: /mnt/data/media/tv
+          subPath: tv
+        - name: nas-media
+          mountPath: /mnt/data/media/movies
+          subPath: movies
+      volumes:
+      - name: gpu-device
+        hostPath:
+          path: /dev/dri
+          type: Directory
+      - name: config
+        persistentVolumeClaim:
+          claimName: jellyfin-config-pvc
+      - name: media
+        persistentVolumeClaim:
+          claimName: media-pvc
+      - name: nas-media
+        persistentVolumeClaim:
+          claimName: nas-media-pvc
+      - name: cache
+        persistentVolumeClaim:
+          claimName: jellyfin-cache-pvc

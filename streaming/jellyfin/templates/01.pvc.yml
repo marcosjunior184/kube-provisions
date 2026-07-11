@@ -1,0 +1,34 @@
+---
+#
+# Jellyfin config
+#
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: streaming
+  name: jellyfin-config-pvc
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+#
+# Jellyfin cache
+#
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: streaming
+  name: jellyfin-cache-pvc
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 60Gi

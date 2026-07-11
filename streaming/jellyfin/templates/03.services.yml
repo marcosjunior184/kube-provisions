@@ -1,0 +1,36 @@
+#
+# Jellyfin Node Port
+#
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: streaming
+  name: jellyfin-node
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
+spec:
+  type: NodePort
+  selector:
+    app: jellyfin
+  ports:
+  - port: {{ .Values.pvc.nodePort.port}} #8096
+    targetPort: {{ .Values.pvc.targetPort }} #8096
+    nodePort: {{ .Values.pvc.nodePort.nodePort }} #30593
+---
+#
+# Jellyfin LoadBalancer
+#
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: streaming
+  name: jellyfin
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
+spec:
+  type: LoadBalancer
+  selector:
+    app: jellyfin
+  ports:
+  - port: {{ .Values.pvc.loadBalancer.port}} #80
+    targetPort: {{ .Values.pvc.targetPort }} # 8096

@@ -1,0 +1,24 @@
+deployment:
+  replicas: 1
+  security:
+    runAsUser: 1000
+    runAsGroup: 1002
+    supplementalGroups:
+      Video: 44
+      Render: 993
+  container:
+    runAsUser: 1000
+    runAsGroup: 1002
+    priviledged: True
+    port: 8096
+  image:
+    repository: jellyfin/jellyfin
+    tag: latest
+
+pvc:
+  targetPort: 8096
+  nodePort:
+    port: 8096
+    nodePort: 30593
+  loadBalancer:
+    port: 80
