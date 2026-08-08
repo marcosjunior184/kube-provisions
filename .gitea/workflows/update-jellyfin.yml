@@ -12,13 +12,16 @@ jobs:
     steps:
       - name: Install buildah and trivy
         run: |
-          apk  update
+          export APK_CACHE=/tmp/apk-cache
+          mkdir -p $APK_CACHE
+          apk add --cache-dir $APK_CACHE --no-cache buildah curl
+
           curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
-          apk  -y install buildah
 
           buildah --version
           trivy --version
       
       - name: login into buildad
         run: |
+          buildah --version
           buildah login --tls-verify=false -u "${{ secrets.USERNAME }}" -p "${{ secrets.GITEAPWD }}" gitea.home.net
