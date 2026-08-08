@@ -12,9 +12,7 @@ jobs:
     steps:
       - name: Install buildah and trivy
         run: |
-          export APK_CACHE=/tmp/apk-cache
-          mkdir -p $APK_CACHE
-          apk add --cache-dir $APK_CACHE --no-cache buildah curl
+          sudo apk add --no-cache buildah curl || apk add --no-cache buildah curl
 
           curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
 
