@@ -1,0 +1,24 @@
+name: Update Jellyfin Image
+
+on:
+  schedule:
+    # Run daily at 2:00 AM UTC, or trigger manually
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+
+jobs:
+  check-and-update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install buildah and trivy
+        run: |
+          sudo apt-get update
+          sudo curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
+          sudo apt-get -y install buildah
+
+          buildah --version
+          trivy --version
+      
+      - name: login into buildad
+        run: |
+          buildah login --tls-verify=false -u "${{ secrets.USERNAME }}" -p "${{ secrets.GITEAPWD }}" gitea.home.net
