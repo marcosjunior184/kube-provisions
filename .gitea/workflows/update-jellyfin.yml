@@ -12,9 +12,9 @@ jobs:
     steps:
       - name: Install buildah and trivy
         run: |
-          apt-get update
+          apk  update
           curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
-          apt-get -y install buildah
+          apk  -y install buildah
 
           buildah --version
           trivy --version
