@@ -9,17 +9,35 @@ on:
 jobs:
   check-and-update:
     runs-on: ubuntu-latest
+    container:
+      image: gitea.home.net/dasilvam/runner:latest
     steps:
       - name: Install buildah and trivy
         run: |
-          sudo apk add --no-cache buildah curl || apk add --no-cache buildah curl
+          apk add --no-cache buildah curl || apk add --no-cache buildah curl
 
           curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
 
           buildah --version
           trivy --version
-      
-      - name: login into buildad
+      - name: Configure buildah storage
         run: |
-          buildah --version
-          buildah login --tls-verify=false -u "${{ secrets.USERNAME }}" -p "${{ secrets.GITEAPWD }}" gitea.home.net
+          mkdir -p ~/.config/containers
+          cat > ~/.config/containers/storage.conf << 'EOF'
+          [storage]
+          driver = "vfs"
+          EOF
+
+      - name: Pull images into buildad
+        run: |
+          # export BUILDHAH_STORAGE_DRIVER=vfs
+          buildah pull --policy=ifnewer docker.io/linuxserver/jellyfin:latest
+
+          buildah pull --tls-verify=false --creds "${{ secrets.USERNAME }}:${{ secrets.GITEAPWD }}" gitea.home.net/dasilvam/jellyfin:26.7.16
+          
+          buildah images
+      
+      # - name: login into buildad
+      #   run: |
+      #     # buildah --version
+      #     buildah login --tls-verify=false -u "${{ secrets.USERNAME }}" -p "${{ secrets.GITEAPWD }}" gitea.home.net
