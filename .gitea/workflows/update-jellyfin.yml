@@ -9,6 +9,11 @@ on:
 jobs:
   check-and-update:
     runs-on: ubuntu-latest
+    container:
+      image: gitea.home.net/dasilvam/runner:latest
+      credentials:
+        username: ${{ secrets.USERNAME }}
+        password: ${{ secrets.GITEAPWD }}
     steps:
       - name: Install buildah and trivy
         run: |
