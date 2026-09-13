@@ -21,12 +21,18 @@ data:
         0 => 'localhost',
         1 => 'nextcloud',  # Service name
         2 => 'nextcloud.cloud.svc.cluster.local',  # FQDN
-        3 => '${METALLB_IP}',  # MetalLB IP
+        3 => '192.168.8.50',  # MetalLB IP
         4 => 'nextcloud.home.net',
         5 => 'nextcloud.madrhs.net',
       ),
       'overwrite.cli.url' => 'https://home.net',
       'overwriteprotocol' => 'https',
+      'wopi_allow_list' => [
+        'https://collabora.home.net',
+      ],
+      'collabora' => array (
+        'url' => 'https://collabora.home.net',
+      ),
     );
 ---
 #

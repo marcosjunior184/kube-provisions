@@ -21,26 +21,40 @@ spec:
         image: collabora/code:latest 
         ports:
         - containerPort: 9980
+          name: http
+        - containerPort: 443
+          name: https
         env:
         - name: aliasgroup1
-          value: "nextcloud.home.net"
+          value: 'https://nextcloud.home.net' 
         - name: name_server
           value: 'https://collabora.home.net'
         - name: NC_DOMAIN
-          value: 'https://collabora.home.net'
+          value: 'https://nextcloud.home.net' 
         - name: dictionaries
           value: "en pt_BR fr" # Optional: Limit language support to improve performance [citation:1][citation:7]
         - name: extra_params
-          value: "--o:ssl.enable=false --o:ssl.termination=true --o:server_name=collabora.home.net"
+          value: "--o:ssl.enable=false --o:ssl.termination=true --o:server_name=collabora.home.net --o:mount_jail_tree=false --o:user_namespace.enable=false --o:ssl.verification=false --o:storage.ssl.enable=false"
         - name: DONT_GEN_SSL_CERT
           value: "YES"  
         securityContext:
           capabilities:
-            add: ["MKNOD"] # Required by Collabora [citation:1][citation:7]
+            add:
+            - CHOWN
+            - SYS_ADMIN
+            - FOWNER
+            - SYS_CHROOT
+            - MKNOD
+            - SETPCAP
+          privileged: false 
+        volumeMounts:
+        - name: collabora-config
+          mountPath: /etc/coolwsd
+          # subPath: coolwsd.xml
       volumes:
       - name: collabora-config
         configMap:
-          name: collabora-config
+          name: collabora-coolwsd-config
       - name: coolwsd-base-dir
         emptyDir: {}
 ---
@@ -57,6 +71,11 @@ spec:
   selector:
     app: collabora
   ports:
-    - protocol: TCP
+    - name: http
+      protocol: TCP
       port: 9980
       targetPort: 9980
+    - name: https
+      protocol: TCP
+      port: 443
+      targetPort: 443
