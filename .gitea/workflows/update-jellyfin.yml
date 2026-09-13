@@ -2,45 +2,34 @@ name: Update Jellyfin Image
 
 on:
   schedule:
-    # Run daily at 2:00 AM UTC, or trigger manually
     - cron: '0 2 * * *'
   workflow_dispatch:
 
 jobs:
   check-and-update:
     runs-on: ubuntu-latest
-    # container:
-    #   image: gitea.home.net/dasilvam/runner:latest
-    #   credentials:
-    #     username: ${{ secrets.USERNAME }}
-    #     password: ${{ secrets.GITEAPWD }}
     steps:
       - name: Install buildah and trivy
         run: |
-          apk add --no-cache buildah curl || apk add --no-cache buildah curl
-
+          apk add --no-cache buildah curl
           curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
-
           buildah --version
           trivy --version
+
       - name: Configure buildah storage
         run: |
           mkdir -p ~/.config/containers
           cat > ~/.config/containers/storage.conf << 'EOF'
           [storage]
           driver = "vfs"
+          runroot = "/tmp/buildah-run"
+          graphroot = "/tmp/buildah-storage"
           EOF
 
-      - name: Pull images into buildad
+      - name: Pull images into buildah
         run: |
-          # export BUILDHAH_STORAGE_DRIVER=vfs
+          export STORAGE_DRIVER=vfs
+          export BUILDAH_ISOLATION=chroot
           buildah pull --policy=ifnewer docker.io/linuxserver/jellyfin:latest
-
           buildah pull --tls-verify=false --creds "${{ secrets.USERNAME }}:${{ secrets.GITEAPWD }}" gitea.home.net/dasilvam/jellyfin:26.7.16
-          
           buildah images
-      
-      # - name: login into buildad
-      #   run: |
-      #     # buildah --version
-      #     buildah login --tls-verify=false -u "${{ secrets.USERNAME }}" -p "${{ secrets.GITEAPWD }}" gitea.home.net
