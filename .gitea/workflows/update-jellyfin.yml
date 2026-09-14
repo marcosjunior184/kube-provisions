@@ -21,8 +21,6 @@ jobs:
 
       - name: Pull images into buildah
         run: |
-          export STORAGE_DRIVER=vfs
-          export BUILDAH_ISOLATION=chroot
           buildah pull --policy=ifnewer docker.io/linuxserver/jellyfin:latest
           buildah pull --tls-verify=false --creds "${{ secrets.USERNAME }}:${{ secrets.GITEAPWD }}" gitea.home.net/dasilvam/jellyfin:26.7.16
           buildah images
