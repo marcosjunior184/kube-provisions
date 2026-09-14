@@ -9,13 +9,6 @@ jobs:
   check-and-update:
     runs-on: ubuntu-latest
     steps:
-      - name: Install buildah and trivy
-        run: |
-          apk add --no-cache buildah curl
-          curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
-          buildah --version
-          trivy --version
-
       - name: Configure buildah storage
         run: |
           mkdir -p ~/.config/containers
