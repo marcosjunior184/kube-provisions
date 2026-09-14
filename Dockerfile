@@ -1,4 +1,4 @@
-FROM alpine:latest
+FROM docker.io/gitea/act_runner:latest
 
 # Only install what's actually needed
 RUN apk add --no-cache \
