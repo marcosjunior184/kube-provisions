@@ -28,7 +28,6 @@ set_config(){
 backup(){
 
 	logger $BLUE "STEP => Initializing Back Up"
-
 	mkdir -p "$BACKUP_DIR"
 
 	backup_files=("./local.crt" "./local.key")
@@ -81,15 +80,12 @@ openssl x509 -req -in local.csr -CA ca.crt -CAkey ca.key -out local.crt -days 36
 logger ... created local.crt
 
 logger ... cleaning
-rm -f local.csr ca.crt ca.key cas.srl
+rm -f local.csr ca.key cas.srl
 
 # Create signed cert
 openssl req -new -newkey rsa:2048 -days 365 -nodes -x509   -keyout local.key -out local.crt -config san.conf
 
 k3s_load_certs
-
-
-
 
 
 # # kubectl -n kube-system create secret tls local-tls --cert=local.crt --key=local.key

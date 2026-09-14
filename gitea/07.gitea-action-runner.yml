@@ -43,7 +43,7 @@ spec:
         fsGroup: 1000
       containers:
       - name: gitea-act-runner
-        image: gitea/act_runner:latest # Or a specific version like 0.2.11 [citation:5]
+        image: gitea.home.net/dasilvam/runner:latest # Or a specific version like 0.2.11 [citation:5]
         workingDir: /data
         env:
         - name: HOME
