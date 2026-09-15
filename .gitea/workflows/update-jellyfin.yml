@@ -11,6 +11,7 @@ env:
   SRC_IMAGE:  ${{ inputs.src_image  || 'docker.io/linuxserver/jellyfin:latest' }}
 jobs:
   mirror:
+    runs-on: ubuntu-latest
     steps:
       - name: login to registries
         run: |
