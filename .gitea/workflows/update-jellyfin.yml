@@ -4,25 +4,44 @@ on:
   schedule:
     - cron: '0 2 * * *'
   workflow_dispatch:
-
+concurrency:
+  group: mirror-${{ github.ref }}
+  cancel-in-progress: false
+env:
+  SRC_IMAGE:  ${{ inputs.src_image  || 'docker.io/linuxserver/jellyfin:latest' }}
 jobs:
-  check-and-update:
-    runs-on: ubuntu-latest
+  mirror:
+    runs-on: self-hosted
     steps:
-      - name: Configure buildah storage
+      - name: login to registries
         run: |
-          mkdir -p ~/.config/containers
-          cat > ~/.config/containers/storage.conf << 'EOF'
-          [storage]
-          driver = "vfs"
-          runroot = "/tmp/buildah-run"
-          graphroot = "/tmp/buildah-storage"
-          EOF
+          set -euo pipefail
+          echo "${{ secrets.GITEAPWD }}" | skopeo login gitea.home.net -u "${{ secrets.USERNAME }}" --password-stdin
+          echo "${{ secrets.GITEAPWD }}" | crane auth login gitea.home.net -u "${{ secrets.USERNAME }}" --password-stdin
 
-      - name: Pull images into buildah
+      - name: compare digest (source vs destination)
+        id: diff
         run: |
-          export STORAGE_DRIVER=vfs
-          export BUILDAH_ISOLATION=chroot
-          buildah pull --policy=ifnewer docker.io/linuxserver/jellyfin:latest
-          buildah pull --tls-verify=false --creds "${{ secrets.USERNAME }}:${{ secrets.GITEAPWD }}" gitea.home.net/dasilvam/jellyfin:26.7.16
-          buildah images
+          set -euo pipefail
+          SRC_DIGEST=$(crane digest "$SRC_IMAGE" | cut -d: -f2)
+
+          if DEST_RAW=$(crane digest gitea.home.net/dasilvam/jellyfin:26.7.16 2>/tmp/dest.err); then
+            DEST_DIGEST=$(echo "$DEST_RAW" | cut -d: -f2)
+          else
+            if grep -qi 'not found\|manifest unknown\|MANIFEST_UNKNOWN' /tmp/dest.err; then
+              DEST_DIGEST=""
+              echo "destination does not exist yet"
+            else
+              echo "failed to query destination:" >&2
+              cat /tmp/dest.err >&2
+              exit 1
+            fi
+          fi
+
+          if [ "$SRC_DIGEST" = "$DEST_DIGEST" ]; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true"  >> "$GITHUB_OUTPUT"
+            echo "digest=$SRC_DIGEST" >> "$GITHUB_OUTPUT"
+          fi
+          echo "$GITHUB_OUTPUT"
