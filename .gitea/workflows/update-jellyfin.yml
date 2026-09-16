@@ -44,4 +44,70 @@ jobs:
             echo "changed=true"  >> "$GITHUB_OUTPUT"
             echo "digest=$SRC_DIGEST" >> "$GITHUB_OUTPUT"
           fi
-          echo "$GITHUB_OUTPUT"
+      - name: Scan with Trivy
+        if: steps.diff.outputs.changed == 'true'
+        id: trivy
+        run: |
+          set -euo pipefail
+          # Run Trivy, output JSON, don't fail yet (we want to notify either way)
+          trivy image \
+            --format json \
+            --output trivy-results.json \
+            --severity CRITICAL,HIGH \
+            --ignore-unfixed \
+            --no-progress \
+            "$SRC_IMAGE" || true
+
+          # Extract counts using jq
+          CRITICAL=$(jq '[.Results[]?.Vulnerabilities[]? | select(.Severity=="CRITICAL")] | length' trivy-results.json)
+          HIGH=$(jq '[.Results[]?.Vulnerabilities[]? | select(.Severity=="HIGH")] | length' trivy-results.json)
+
+          # Build Discord payload
+          PAYLOAD=$(jq -n \
+            --arg img "$SRC_IMAGE" \
+            --arg crit "$CRITICAL" \
+            --arg high "$HIGH" \
+            '{
+              content: "🛡️ Trivy scan completed",
+              embeds: [{
+                title: "Image Scan Results",
+                color: (if ($crit|tonumber) > 0 then 15158332 else 3066993 end),
+                fields: [
+                  { name: "Image", value: $img, inline: false },
+                  { name: "Critical", value: $crit, inline: true },
+                  { name: "High", value: $high, inline: true }
+                ]
+              }]
+            }')
+
+          # Send to Discord
+          curl -sf -H "Content-Type: application/json" \
+            -d "$PAYLOAD" \
+            "${{ secrets.DISCORD_WEBHOOK }}"
+
+          # Now decide if the job should fail
+          if [ "$CRITICAL" -gt 0 ] || [ "$HIGH" -gt 0 ]; then
+            echo "Vulnerabilities found — failing job"
+            exit 1
+          fi
+  # PAYLOAD=$(jq -n \
+  # --arg img "$SRC_IMAGE" \
+  # --arg crit "$CRITICAL" \
+  # --arg high "$HIGH" \
+  # --arg thread "jellyfin" \
+  # --arg tag_clean "1234567890" \
+  # --arg tag_critical "0987654321" \
+  # --argjson color "$([ "$CRITICAL" -gt 0 ] && echo 15158332 || echo 3066993)" \
+  # '{
+  #   thread_name: $thread,
+  #   applied_tags: [ (if ($crit|tonumber) > 0 then $tag_critical else $tag_clean end) ],
+  #   embeds: [{
+  #     title: "Image Scan Results",
+  #     color: $color,
+  #     fields: [
+  #       { name: "Image", value: $img, inline: false },
+  #       { name: "Critical", value: $crit, inline: true },
+  #       { name: "High", value: $high, inline: true }
+  #     ]
+  #   }]
+  # }')
