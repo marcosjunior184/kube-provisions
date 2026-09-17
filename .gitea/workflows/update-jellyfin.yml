@@ -49,47 +49,114 @@ jobs:
         id: trivy
         run: |
           set -euo pipefail
-          # Run Trivy, output JSON, don't fail yet (we want to notify either way)
-          trivy image \
-            --format json \
-            --output trivy-results.json \
-            --severity CRITICAL,HIGH \
-            --ignore-unfixed \
-            --no-progress \
+
+          # 1. Get JSON for parsing
+          trivy image --format json --output trivy.json \
+            --severity CRITICAL,HIGH --ignore-unfixed --no-progress \
             "$SRC_IMAGE" || true
 
-          # Extract counts using jq
-          CRITICAL=$(jq '[.Results[]?.Vulnerabilities[]? | select(.Severity=="CRITICAL")] | length' trivy-results.json)
-          HIGH=$(jq '[.Results[]?.Vulnerabilities[]? | select(.Severity=="HIGH")] | length' trivy-results.json)
+          # 2. Get the human-readable table
+          trivy image --format table --output trivy-table.txt \
+            --severity CRITICAL,HIGH --ignore-unfixed --no-progress \
+            "$SRC_IMAGE" || true
 
-          # Build Discord payload
-          PAYLOAD=$(jq -n \
+          # 3. Counts for the summary embed
+          CRITICAL=$(jq '[.Results[]?.Vulnerabilities[]? | select(.Severity=="CRITICAL")] | length' trivy.json)
+          HIGH=$(jq '[.Results[]?.Vulnerabilities[]? | select(.Severity=="HIGH")] | length' trivy.json)
+          echo "critical=$CRITICAL" >> "$GITHUB_OUTPUT"
+          echo "high=$HIGH"         >> "$GITHUB_OUTPUT"
+
+          # 4. Build a clean markdown table from the JSON (more compact than the raw table)
+          {
+            echo "# Trivy scan: $SRC_IMAGE"
+            echo ""
+            echo "| Severity | CVE | Package | Installed | Fixed | Title |"
+            echo "|----------|-----|---------|-----------|-------|-------|"
+            jq -r '
+              .Results[]?
+              | .Target as $target
+              | .Vulnerabilities[]?
+              | "| \(.Severity) | \(.VulnerabilityID) | \(.PkgName) | \(.InstalledVersion) | \(.FixedVersion // "-") | \(.Title // "-" | gsub("\\|"; "\\\\|")) |"
+            ' trivy.json
+          } > trivy-report.md
+
+          # 5. Truncate the report file if it is huge (Discord file upload is fine, but keep it sane)
+          head -c 200000 trivy-report.md > trivy-report-truncated.md
+          mv trivy-report-truncated.md trivy-report.md
+
+          # 6. Build the embed JSON (summary only)
+          EMBED=$(jq -n \
             --arg img "$SRC_IMAGE" \
             --arg crit "$CRITICAL" \
             --arg high "$HIGH" \
             '{
               content: "🛡️ Trivy scan completed",
               embeds: [{
-                title: "Image Scan Results",
+                title: "Trivy Scan Results",
                 color: (if ($crit|tonumber) > 0 then 15158332 else 3066993 end),
                 fields: [
-                  { name: "Image", value: $img, inline: false },
-                  { name: "Critical", value: $crit, inline: true },
-                  { name: "High", value: $high, inline: true }
-                ]
+                  { name: "Image",    value: $img,    inline: false },
+                  { name: "Critical", value: $crit,   inline: true },
+                  { name: "High",     value: $high,   inline: true }
+                ],
+                footer: { text: "Full report attached as trivy-report.md" }
               }]
             }')
 
-          # Send to Discord
-          curl -sf -H "Content-Type: application/json" \
-            -d "$PAYLOAD" \
+          # 7. Post as multipart with the file attached
+          curl -sf \
+            -F "payload_json=$EMBED" \
+            -F "files[0]=@trivy-report.md;type=text/markdown" \
             "${{ secrets.DISCORD_WEBHOOK }}"
 
-          # Now decide if the job should fail
+          # 8. Fail if any CRITICAL or HIGH
           if [ "$CRITICAL" -gt 0 ] || [ "$HIGH" -gt 0 ]; then
-            echo "Vulnerabilities found — failing job"
             exit 1
           fi
+
+
+          # set -euo pipefail
+          # # Run Trivy, output JSON, don't fail yet (we want to notify either way)
+          # trivy image \
+          #   --format json \
+          #   --output trivy-results.json \
+          #   --severity CRITICAL,HIGH \
+          #   --ignore-unfixed \
+          #   --no-progress \
+          #   "$SRC_IMAGE" || true
+
+          # # Extract counts using jq
+          # CRITICAL=$(jq '[.Results[]?.Vulnerabilities[]? | select(.Severity=="CRITICAL")] | length' trivy-results.json)
+          # HIGH=$(jq '[.Results[]?.Vulnerabilities[]? | select(.Severity=="HIGH")] | length' trivy-results.json)
+
+          # # Build Discord payload
+          # PAYLOAD=$(jq -n \
+          #   --arg img "$SRC_IMAGE" \
+          #   --arg crit "$CRITICAL" \
+          #   --arg high "$HIGH" \
+          #   '{
+          #     content: "🛡️ Trivy scan completed",
+          #     embeds: [{
+          #       title: "Image Scan Results",
+          #       color: (if ($crit|tonumber) > 0 then 15158332 else 3066993 end),
+          #       fields: [
+          #         { name: "Image", value: $img, inline: false },
+          #         { name: "Critical", value: $crit, inline: true },
+          #         { name: "High", value: $high, inline: true }
+          #       ]
+          #     }]
+          #   }')
+
+          # # Send to Discord
+          # curl -sf -H "Content-Type: application/json" \
+          #   -d "$PAYLOAD" \
+          #   "${{ secrets.DISCORD_WEBHOOK }}"
+
+          # # Now decide if the job should fail
+          # if [ "$CRITICAL" -gt 0 ] || [ "$HIGH" -gt 0 ]; then
+          #   echo "Vulnerabilities found — failing job"
+          #   exit 1
+          # fi
   # PAYLOAD=$(jq -n \
   # --arg img "$SRC_IMAGE" \
   # --arg crit "$CRITICAL" \
