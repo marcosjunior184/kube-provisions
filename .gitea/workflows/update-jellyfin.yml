@@ -106,7 +106,7 @@ jobs:
           # 7. Post as multipart with the file attached
           curl -sf \
             -F "payload_json=$EMBED" \
-            -F "files[0]=@trivy-report.md;type=text/markdown" \
+            -F "files[0]=@trivy-table.txt;type=text/markdown" \
             "${{ secrets.DISCORD_WEBHOOK }}"
 
           # 8. Fail if any CRITICAL or HIGH
